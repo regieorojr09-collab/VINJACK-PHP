@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+.vscode
+.idea
+.agents
+.gemini
+scratch
+*.zip
+*.log
+*.tmp
