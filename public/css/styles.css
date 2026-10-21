@@ -1,0 +1,932 @@
+/**
+ * VinJack Motorworks - Design System & Modern Responsive UI Styles
+ * Theme: Automotive Dark Slate & Performance Amber Accent
+ */
+
+:root {
+    --bg-page: #0b0f19;
+    --bg-surface: #131b2e;
+    --bg-card: #1a233a;
+    --bg-card-hover: #222e4c;
+    --bg-input: #101726;
+    --border: #2a3756;
+    --border-subtle: #1e2842;
+
+    --primary: #f59e0b;
+    --primary-hover: #d97706;
+    --primary-glow: rgba(245, 158, 11, 0.25);
+
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.15);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.15);
+    --danger: #ef4444;
+    --danger-bg: rgba(239, 68, 68, 0.15);
+    --info: #06b6d4;
+    --info-bg: rgba(6, 182, 212, 0.15);
+
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+    --shadow-modal: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-page);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* Base App Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--primary), #ea580c);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.brand-title h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.brand-title p {
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
+.sidebar-nav {
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--text);
+    background-color: var(--bg-card);
+}
+
+.nav-link.active {
+    color: #fff;
+    background-color: var(--primary-hover);
+    box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Topbar Header */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    height: 64px;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topbar-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-meta {
+    text-align: right;
+}
+
+.user-meta .name {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.user-meta .role {
+    font-size: 0.75rem;
+    color: var(--primary);
+}
+
+/* Alert Banner */
+.alert-banner {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid transparent;
+}
+.alert-banner.alert-success { background-color: var(--success-bg); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+.alert-banner.alert-warning { background-color: var(--warning-bg); color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
+.alert-banner.alert-danger  { background-color: var(--danger-bg);  color: var(--danger);  border-color: rgba(239, 68, 68, 0.3); }
+.alert-banner.alert-info    { background-color: var(--info-bg);    color: var(--info);    border-color: rgba(6, 182, 212, 0.3); }
+
+/* Main Outlet Container */
+.app-outlet {
+    flex: 1;
+    padding: 1.75rem;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Cards & Metrics */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+}
+
+.metric-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+}
+.metric-card.border-success { border-left-color: var(--success); }
+.metric-card.border-warning { border-left-color: var(--warning); }
+.metric-card.border-danger  { border-left-color: var(--danger); }
+
+.metric-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Data Tables */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: var(--bg-surface);
+    padding: 0.85rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.875rem;
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--bg-card-hover);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+.badge-success { background-color: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-warning { background-color: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-danger  { background-color: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-danger.badge-outline { background: transparent; border-color: var(--danger); }
+.badge-info    { background-color: var(--info-bg); color: var(--info); border: 1px solid rgba(6, 182, 212, 0.3); }
+.badge-secondary { background-color: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: #000;
+}
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.btn-secondary {
+    background-color: var(--bg-surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+    background-color: var(--bg-card-hover);
+    border-color: var(--primary);
+}
+
+.btn-sm {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.35rem;
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease;
+}
+.btn-icon:hover {
+    background-color: var(--border);
+}
+
+/* Form Controls */
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.form-control-sm {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.8rem;
+}
+
+/* Modals */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+}
+
+.modal-dialog {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 600px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-modal);
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlide 0.2s ease-out;
+}
+
+.modal-dialog.modal-lg {
+    max-width: 800px;
+}
+
+@keyframes modalSlide {
+    from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+.close-btn:hover { color: var(--text); }
+
+/* Login Page Specific */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.25rem;
+}
+
+.login-brand {
+    text-align: center;
+}
+
+.login-brand .brand-badge {
+    margin: 0 auto 1rem auto;
+}
+
+/* Utilities */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.items-center { align-items: center; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+
+.grid { display: grid; }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.col-span-2 { grid-column: span 2 / span 2; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.p-0 { padding: 0 !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.pt-3 { padding-top: 0.75rem; }
+.pt-4 { padding-top: 1rem; }
+.pb-3 { padding-bottom: 0.75rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.py-5 { padding-top: 2rem; padding-bottom: 2rem; }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.text-2xl { font-size: 1.5rem; }
+.font-mono { font-family: var(--font-mono); }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+
+.text-primary { color: var(--primary); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger  { color: var(--danger); }
+.text-muted   { color: var(--text-muted); }
+
+.border-top { border-top: 1px solid var(--border); }
+.border-bottom { border-bottom: 1px solid var(--border); }
+
+/* ==========================================================================
+   POS Terminal & Transaction Layout
+   ========================================================================== */
+.pos-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.pos-catalog-panel {
+    min-width: 0;
+}
+
+.pos-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.pos-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.pos-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 14px var(--primary-glow);
+    transform: translateY(-2px);
+}
+
+.pos-card.service-card {
+    border-left: 3px solid var(--success);
+}
+
+.pos-card.out-of-stock {
+    opacity: 0.6;
+    border-color: var(--danger-bg);
+}
+.pos-card.out-of-stock:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--border);
+}
+
+.pos-card-code {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.pos-card-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0.5rem 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pos-card-meta {
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.pos-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 0.5rem;
+    margin-top: auto;
+}
+
+.pos-card-price {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+/* Category Filter Pills */
+.pill-btn {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+    color: var(--text);
+    border-color: var(--primary);
+}
+
+.pill-btn.active {
+    background-color: var(--primary);
+    color: #000;
+    font-weight: 700;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Cart Panel */
+.pos-cart-panel {
+    position: sticky;
+    top: 1rem;
+}
+
+.cart-items-container {
+    max-height: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cart-line-item {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.75rem;
+    transition: border-color 0.2s ease;
+}
+
+.cart-line-item:hover {
+    border-color: var(--border);
+}
+
+.cart-line-item.service-line {
+    border-left: 3px solid var(--info);
+}
+
+.qty-control .btn-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    padding: 0;
+    line-height: 1;
+}
+
+.customer-info-box {
+    border: 1px solid var(--border-subtle);
+}
+
+/* ==========================================================================
+   Thermal Digital Receipt (DOMParser Output)
+   ========================================================================== */
+.thermal-receipt-paper {
+    background-color: #fafafa;
+    color: #111827;
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    border: 1px dashed #cbd5e1;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.receipt-paper {
+    line-height: 1.4;
+}
+
+.receipt-divider {
+    color: #94a3b8;
+    margin: 0.35rem 0;
+    letter-spacing: -1px;
+    user-select: none;
+}
+
+.receipt-table {
+    border-collapse: collapse;
+}
+
+.receipt-table th {
+    padding: 0.35rem 0;
+    font-size: 0.7rem;
+    color: #475569;
+}
+
+.receipt-table td {
+    padding: 0.4rem 0;
+    vertical-align: top;
+}
+
+/* ==========================================================================
+   Phase 5 Reporting & Visual Polish
+   ========================================================================== */
+
+/* Date Range Pills */
+.date-range-pills {
+    display: inline-flex;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    gap: 4px;
+}
+
+.pill-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pill-btn:hover {
+    color: var(--text);
+    background: var(--bg-card);
+}
+
+.pill-btn.active {
+    background: var(--primary);
+    color: #0b0f19;
+    font-weight: 700;
+    box-shadow: 0 1px 8px var(--primary-glow);
+}
+
+/* Multi-Segmented Inventory Health Meter */
+.health-progress-track {
+    display: flex;
+    height: 14px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    margin-bottom: 0.85rem;
+}
+
+.track-segment {
+    height: 100%;
+    transition: width 0.4s ease;
+    position: relative;
+}
+
+.segment-healthy  { background: linear-gradient(90deg, #10b981, #059669); }
+.segment-low      { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.segment-critical { background: linear-gradient(90deg, #f97316, #ea580c); }
+.segment-out      { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+/* Tabs & Tab Navigation */
+.tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 1.25rem;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: var(--text);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Table Totals Row */
+.totals-tfoot tr td {
+    background-color: var(--bg-surface);
+    border-top: 2px solid var(--border);
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+}
+
+/* Card Subtle Hover Enhancements */
+.card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   Print Rules (POS Thermal & A4 Reports)
+   ========================================================================== */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    /* 1. Thermal POS Receipt */
+    .thermal-receipt-paper, .thermal-receipt-paper * {
+        visibility: visible;
+    }
+    .thermal-receipt-paper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        color: #000;
+    }
+
+    /* 2. Official A4 Management Reports */
+    .printable-report-area, .printable-report-area * {
+        visibility: visible;
+    }
+    .printable-report-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 1.5rem;
+        background: #ffffff !important;
+        color: #0f172a !important;
+    }
+    .print-only-header {
+        display: block !important;
+    }
+    .printable-report-area .card, 
+    .printable-report-area .metric-card {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+    }
+    .printable-report-area .metric-label,
+    .printable-report-area .text-muted {
+        color: #475569 !important;
+    }
+    .printable-report-area .metric-value {
+        color: #0f172a !important;
+    }
+    .printable-report-area table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #0f172a !important;
+    }
+    .printable-report-area th, 
+    .printable-report-area td {
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        padding: 6px 10px !important;
+    }
+    .printable-report-area th {
+        background: #e2e8f0 !important;
+        font-weight: 700 !important;
+    }
+    .printable-report-area tfoot td {
+        background: #f1f5f9 !important;
+        font-weight: 800 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .pos-layout {
+        grid-template-columns: 1fr;
+    }
+    .pos-cart-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .sidebar { width: 70px; }
+    .brand-title, .nav-link span, .sidebar-footer { display: none; }
+    .nav-link { justify-content: center; }
+}
+
+@media (max-width: 600px) {
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr; }
+    .col-span-2 { grid-column: span 1 / span 1; }
+    .app-container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; }
+    .sidebar-nav { flex-direction: row; overflow-x: auto; }
+}
+

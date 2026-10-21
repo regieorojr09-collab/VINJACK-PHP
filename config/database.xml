@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database_config>
+    <environment>development</environment>
+    <connection>
+        <host>localhost</host>
+        <port>3306</port>
+        <dbname>vinjack_db</dbname>
+        <username>root</username>
+        <password></password>
+        <charset>utf8mb4</charset>
+    </connection>
+    <options>
+        <persistent>true</persistent>
+        <error_mode>EXCEPTION</error_mode>
+        <fetch_mode>ASSOC</fetch_mode>
+    </options>
+</database_config>

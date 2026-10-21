@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VinJack Motorworks - Sales & Inventory Management</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Design System Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation (Hidden on Login) -->
+        <aside id="app-sidebar" class="sidebar hidden">
+            <div class="sidebar-header">
+                <div class="brand-badge">VJ</div>
+                <div class="brand-title">
+                    <h2>VinJack</h2>
+                    <p>Motorworks</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#/dashboard" class="nav-link" id="nav-dashboard">
+                    <i>📊</i> <span>Dashboard</span>
+                </a>
+                <a href="#/pos" class="nav-link" id="nav-pos">
+                    <i>💳</i> <span>POS Terminal</span>
+                </a>
+                <a href="#/products" class="nav-link" id="nav-products">
+                    <i>📦</i> <span>Inventory & Catalog</span>
+                </a>
+                <a href="#/movements" class="nav-link" id="nav-movements">
+                    <i>🔄</i> <span>Stock Ledger</span>
+                </a>
+                <a href="#/purchase-orders" class="nav-link" id="nav-purchase-orders">
+                    <i>📋</i> <span>Purchase Orders</span>
+                </a>
+                <a href="#/returns" class="nav-link" id="nav-returns">
+                    <i>↩️</i> <span>Returns & Claims</span>
+                </a>
+                <a href="#/consignment" class="nav-link" id="nav-consignment">
+                    <i>🤝</i> <span>Consignments</span>
+                </a>
+                <a href="#/reports" class="nav-link" id="nav-reports">
+                    <i>📈</i> <span>Reports & Analytics</span>
+                </a>
+                <a href="#/suppliers" class="nav-link" id="nav-suppliers">
+                    <i>🏢</i> <span>Suppliers Directory</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-block btn-sm">
+                    🚪 Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Wrapper (Topbar + View Outlet) -->
+        <div class="main-wrapper">
+            <!-- Topbar (Hidden on Login) -->
+            <header id="app-topbar" class="topbar hidden">
+                <div class="topbar-title" id="current-page-title">
+                    Inventory & Products
+                </div>
+                <div class="user-badge">
+                    <div class="user-meta">
+                        <div class="name" id="user-display-name">Admin User</div>
+                        <div class="role" id="user-display-role">Super Admin</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Global Flash Alert Banner -->
+            <div id="alert-banner-container" class="hidden"></div>
+
+            <!-- Dynamic View Outlet -->
+            <main id="app-root" class="app-outlet">
+                <!-- Page component will be rendered here by router.js -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Application Bootstrap (ES6 Modules) -->
+    <script type="module">
+        import { router } from './js/router.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            router.init();
+        });
+    </script>
+</body>
+</html>

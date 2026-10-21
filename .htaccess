@@ -1,0 +1,27 @@
+# Disable directory browsing
+Options -Indexes
+
+# Follow symbolic links
+Options +FollowSymLinks
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /VINJACK-PHP/
+
+    # Security: Restrict direct access to sensitive configuration and source files
+    RewriteRule ^(config|database|docs)/.*$ - [F,L,NC]
+    RewriteRule \.(xml|sql|md|log|ini|env|git)$ - [F,L,NC]
+
+    # Route all /api/* requests to api/index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api/(.*)$ api/index.php?request=$1 [QSA,NC,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<app_config>
+    <settings>
+        <jwt_secret>vinjack_super_secret_key_change_me_in_production</jwt_secret>
+        <jwt_expiration_seconds>86400</jwt_expiration_seconds>
+        <environment>development</environment>
+        <cors_allowed_origins>
+            <origin>*</origin>
+        </cors_allowed_origins>
+        <debug_mode>true</debug_mode>
+    </settings>
+    <business>
+        <company_name>VinJack Motorworks</company_name>
+        <timezone>Asia/Manila</timezone>
+        <default_tax_rate>0.0</default_tax_rate>
+        <currency>PHP</currency>
+    </business>
+</app_config>

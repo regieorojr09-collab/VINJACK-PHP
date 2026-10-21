@@ -1,0 +1,32 @@
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*~
+*.swp
+*.bak
+
+# Scratch scripts & temporary data
+scratch/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# Antigravity & AI cache
+.agents/
+.gemini/

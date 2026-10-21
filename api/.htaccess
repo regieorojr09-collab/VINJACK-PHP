@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /VINJACK-PHP/api/
+
+    # Pass Authorization Header to PHP environment
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+    # Block direct access to internal subdirectories (config, core, middleware, models, services, utils)
+    RewriteRule ^(config|core|middleware|models|services|utils)/.*$ - [F,L,NC]
+    RewriteRule \.(xml|json|sql|log)$ - [F,L,NC]
+
+    # Route all non-file/non-directory requests to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?request=$1 [QSA,NC,L]
+</IfModule>
+
+# Handle Cross-Origin Resource Sharing (CORS)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+</IfModule>
