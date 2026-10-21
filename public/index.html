@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VinJack Motorworks - Sales & Inventory Management</title>
+    <title>VinJack MS - Sales & Inventory Management System</title>
     <!-- Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,61 +16,94 @@
         <!-- Sidebar Navigation (Hidden on Login) -->
         <aside id="app-sidebar" class="sidebar hidden">
             <div class="sidebar-header">
-                <div class="brand-badge">VJ</div>
-                <div class="brand-title">
-                    <h2>VinJack</h2>
-                    <p>Motorworks</p>
+                <div class="flex items-center gap-2">
+                    <div class="brand-crest">
+                        <span style="font-size: 1.25rem;">🏍️</span>
+                    </div>
+                    <span class="brand-name">VinJack MS</span>
                 </div>
+                <button id="sidebar-toggle-btn" class="sidebar-collapse-btn" title="Toggle Sidebar">&lsaquo;</button>
             </div>
 
             <nav class="sidebar-nav">
+                <!-- Top Dashboard Link -->
                 <a href="#/dashboard" class="nav-link" id="nav-dashboard">
-                    <i>📊</i> <span>Dashboard</span>
+                    <i class="nav-icon">📊</i> <span>Dashboard</span>
                 </a>
+
+                <!-- SALES SECTION -->
+                <div class="sidebar-section-title">SALES</div>
                 <a href="#/pos" class="nav-link" id="nav-pos">
-                    <i>💳</i> <span>POS Terminal</span>
+                    <i class="nav-icon">🛒</i> <span>Sales (POS)</span>
                 </a>
-                <a href="#/products" class="nav-link" id="nav-products">
-                    <i>📦</i> <span>Inventory & Catalog</span>
-                </a>
-                <a href="#/movements" class="nav-link" id="nav-movements">
-                    <i>🔄</i> <span>Stock Ledger</span>
-                </a>
-                <a href="#/purchase-orders" class="nav-link" id="nav-purchase-orders">
-                    <i>📋</i> <span>Purchase Orders</span>
+                <a href="#/customers" class="nav-link" id="nav-customers">
+                    <i class="nav-icon">👥</i> <span>Customers</span>
                 </a>
                 <a href="#/returns" class="nav-link" id="nav-returns">
-                    <i>↩️</i> <span>Returns & Claims</span>
+                    <i class="nav-icon">↩️</i> <span>Returns</span>
                 </a>
-                <a href="#/consignment" class="nav-link" id="nav-consignment">
-                    <i>🤝</i> <span>Consignments</span>
+
+                <!-- INVENTORY & SUPPLY SECTION -->
+                <div class="sidebar-section-title">INVENTORY & SUPPLY</div>
+                <a href="#/products" class="nav-link" id="nav-products">
+                    <i class="nav-icon">📦</i> <span>Inventory</span>
                 </a>
-                <a href="#/reports" class="nav-link" id="nav-reports">
-                    <i>📈</i> <span>Reports & Analytics</span>
+                <a href="#/movements" class="nav-link" id="nav-deliveries">
+                    <i class="nav-icon">🚚</i> <span>Deliveries</span>
+                </a>
+                <a href="#/purchase-orders" class="nav-link" id="nav-purchase-orders">
+                    <i class="nav-icon">📋</i> <span>Purchase Orders</span>
                 </a>
                 <a href="#/suppliers" class="nav-link" id="nav-suppliers">
-                    <i>🏢</i> <span>Suppliers Directory</span>
+                    <i class="nav-icon">🏢</i> <span>Suppliers</span>
+                </a>
+                <a href="#/returns" class="nav-link" id="nav-supplier-returns">
+                    <i class="nav-icon">🚛</i> <span>Supplier Returns</span>
+                </a>
+                <a href="#/consignment" class="nav-link" id="nav-consignment">
+                    <i class="nav-icon">🤝</i> <span>Consignment Payouts</span>
+                </a>
+
+                <!-- REPORTS SECTION -->
+                <div class="sidebar-section-title">REPORTS</div>
+                <a href="#/reports" class="nav-link" id="nav-reports">
+                    <i class="nav-icon">📊</i> <span>Reports</span>
+                </a>
+                <a href="#/pos" class="nav-link" id="nav-transactions">
+                    <i class="nav-icon">📄</i> <span>Transactions</span>
+                </a>
+                <a href="#/movements" class="nav-link" id="nav-audit-log">
+                    <i class="nav-icon">📑</i> <span>Audit Log</span>
+                </a>
+
+                <!-- ADMIN SECTION -->
+                <div class="sidebar-section-title">ADMIN</div>
+                <a href="#/suppliers" class="nav-link" id="nav-user-mgmt">
+                    <i class="nav-icon">👤</i> <span>User Management</span>
                 </a>
             </nav>
 
             <div class="sidebar-footer">
-                <button id="logout-btn" class="btn btn-secondary btn-block btn-sm">
-                    🚪 Logout
+                <button id="logout-btn" class="btn btn-secondary btn-block btn-sm flex items-center justify-center gap-2">
+                    <span>🚪</span> <span>Logout</span>
                 </button>
             </div>
         </aside>
 
         <!-- Main Wrapper (Topbar + View Outlet) -->
         <div class="main-wrapper">
-            <!-- Topbar (Hidden on Login) -->
+            <!-- Topbar (Solid Royal Blue matching screenshot) -->
             <header id="app-topbar" class="topbar hidden">
-                <div class="topbar-title" id="current-page-title">
-                    Inventory & Products
+                <div class="topbar-left">
+                    <span class="topbar-title" id="current-page-title">Dashboard</span>
                 </div>
-                <div class="user-badge">
-                    <div class="user-meta">
-                        <div class="name" id="user-display-name">Admin User</div>
-                        <div class="role" id="user-display-role">Super Admin</div>
+                <div class="topbar-actions">
+                    <button class="topbar-icon-btn" title="Notifications" id="notif-btn">
+                        <span>🔔</span>
+                        <span class="notif-badge-dot"></span>
+                    </button>
+                    <div class="user-avatar-circle" title="User Profile">
+                        <span>👤</span>
                     </div>
                 </div>
             </header>

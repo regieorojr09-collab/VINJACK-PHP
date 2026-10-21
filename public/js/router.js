@@ -32,7 +32,11 @@ class Router {
             '/consignment':     { view: ConsignmentPage,    title: 'Consignment Payables & Settlements' },
             '/suppliers':       { view: SuppliersPage,      title: 'Suppliers Directory' },
             '/purchase-orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
-            '/purchase_orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' }
+            '/purchase_orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
+            '/deliveries':      { view: MovementsPage,      title: 'Deliveries & Stock Movements' },
+            '/customers':       { view: POSPage,            title: 'Customer Directory & Accounts' },
+            '/transactions':    { view: POSPage,            title: 'Sales & Transactions' },
+            '/audit-log':       { view: MovementsPage,      title: 'Audit Log & Activity' }
         };
 
         this.appRoot = null;
