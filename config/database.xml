@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database_config>
-    <environment>development</environment>
+    <environment>production</environment>
     <connection>
-        <host>localhost</host>
+        <host>sql108.infinityfree.com</host>
         <port>3306</port>
-        <dbname>vinjack_db</dbname>
-        <username>root</username>
-        <password></password>
+        <dbname>if0_43237208_vinjack</dbname>
+        <username>if0_43237208</username>
+        <password>YOUR_VPANEL_PASSWORD_HERE</password>
         <charset>utf8mb4</charset>
     </connection>
     <options>
