@@ -31,22 +31,26 @@ class ReportController {
 
         switch ($action) {
             case 'dashboard':
-                RBACMiddleware::checkPermission($user, 'canViewDashboard');
-                $this->getDashboard();
+                // Allows users with canViewDashboard OR canViewReports; Super Admin bypasses
+                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
+                $this->getDashboardOverview();
                 break;
 
             case 'top-selling':
-                RBACMiddleware::checkPermission($user, 'canViewReports');
+                // Dashboard widgets: allows users with canViewDashboard OR canViewReports; Super Admin bypasses
+                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
                 $this->getTopSelling();
                 break;
 
             case 'inventory-valuation':
             case 'valuation':
+                // Financial inventory valuation report requires canViewReports; Super Admin bypasses
                 RBACMiddleware::checkPermission($user, 'canViewReports');
                 $this->getValuation();
                 break;
 
             case 'sales':
+                // Full financial sales & profitability report requires canViewReports; Super Admin bypasses
                 RBACMiddleware::checkPermission($user, 'canViewReports');
                 $this->getSalesReport();
                 break;
@@ -57,7 +61,7 @@ class ReportController {
         }
     }
 
-    public function getDashboard(): void {
+    public function getDashboardOverview(): void {
         $startDate = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? Validator::sanitize($_GET['start_date']) : null;
         $endDate = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? Validator::sanitize($_GET['end_date']) : null;
 
@@ -70,6 +74,13 @@ class ReportController {
         } catch (\Throwable $e) {
             Response::json(['success' => false, 'message' => 'Error querying dashboard: ' . $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Alias for getDashboardOverview
+     */
+    public function getDashboard(): void {
+        $this->getDashboardOverview();
     }
 
     public function getTopSelling(): void {
