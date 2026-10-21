@@ -9,7 +9,11 @@
 
 ---
 
-## 🌐 Live Application & Access Details
+## 🌐 Live Application
+* **Live System URL:** [https://vinjacksystem.online](https://vinjacksystem.online)
+* **Test Credentials:** User: `admin` | Pass: `password123`
+
+### 🌍 Access Details & Environments
 
 | Environment | URL | Description |
 |---|---|---|
