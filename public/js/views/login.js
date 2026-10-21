@@ -1,6 +1,6 @@
 import { apiClient } from '../client.js';
 import { State } from '../state.js';
-
+// VinJack Motorworks - User Authentication & Session Gateway (Auto-Sync Active)
 export const LoginPage = {
     render() {
         return `

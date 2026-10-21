@@ -28,12 +28,12 @@ Write-Host "  Press Ctrl+C to terminate auto-sync anytime.`n" -ForegroundColor Y
 
 # Patterns to strictly exclude from triggering sync
 $ExcludedPatterns = @(
-    '\.git',
-    '\\scratch',
-    '\.vscode',
-    '\.gemini',
-    '\.agents',
-    '\.idea',
+    '[\\/]\.git([\\/]|$)',
+    '[\\/]scratch([\\/]|$)',
+    '[\\/]\.vscode([\\/]|$)',
+    '[\\/]\.gemini([\\/]|$)',
+    '[\\/]\.agents([\\/]|$)',
+    '[\\/]\.idea([\\/]|$)',
     '\.log$',
     '\.tmp$',
     '\.temp$',
@@ -51,9 +51,8 @@ function Test-IsExcluded([string]$FilePath) {
 }
 
 # State variables
-$script:LastEventTime = $null
-$script:PendingFiles = [System.Collections.Generic.HashSet[string]]::new()
-$script:IsSyncing = $false
+$LastEventTime = $null
+$IsSyncing = $false
 
 # Initialize FileSystemWatcher
 $Watcher = New-Object System.IO.FileSystemWatcher
@@ -62,43 +61,46 @@ $Watcher.IncludeSubdirectories = $true
 $Watcher.EnableRaisingEvents = $true
 $Watcher.NotifyFilter = [System.IO.NotifyFilters]'FileName, LastWrite, DirectoryName'
 
-# Event Action ScriptBlock
-$OnChange = {
-    param($Source, $EventArgs)
-    $RelativePath = $EventArgs.FullPath.Replace($RootPath, '').TrimStart('\/')
-
-    if (-not (Test-IsExcluded -FilePath $EventArgs.FullPath)) {
-        $script:PendingFiles.Add($RelativePath) | Out-Null
-        $script:LastEventTime = [DateTime]::UtcNow
-        $timestamp = (Get-Date).ToString("HH:mm:ss")
-        Write-Host "[$timestamp] [CHANGE DETECTED] $($EventArgs.ChangeType): $RelativePath" -ForegroundColor DarkCyan
-    }
-}
-
-# Register Watcher Events
-$Handlers = @()
-$Handlers += Register-ObjectEvent -InputObject $Watcher -EventName "Changed" -Action $OnChange
-$Handlers += Register-ObjectEvent -InputObject $Watcher -EventName "Created" -Action $OnChange
-$Handlers += Register-ObjectEvent -InputObject $Watcher -EventName "Deleted" -Action $OnChange
-$Handlers += Register-ObjectEvent -InputObject $Watcher -EventName "Renamed" -Action $OnChange
+# Register event source identifiers
+$SourceIds = @("GitWatcher_Changed", "GitWatcher_Created", "GitWatcher_Deleted", "GitWatcher_Renamed")
+Register-ObjectEvent -InputObject $Watcher -EventName "Changed" -SourceIdentifier $SourceIds[0] | Out-Null
+Register-ObjectEvent -InputObject $Watcher -EventName "Created" -SourceIdentifier $SourceIds[1] | Out-Null
+Register-ObjectEvent -InputObject $Watcher -EventName "Deleted" -SourceIdentifier $SourceIds[2] | Out-Null
+Register-ObjectEvent -InputObject $Watcher -EventName "Renamed" -SourceIdentifier $SourceIds[3] | Out-Null
 
 try {
     while ($true) {
-        Start-Sleep -Milliseconds 1000
+        # Wait up to 1 second for a filesystem event
+        $evt = Wait-Event -Timeout 1
+
+        if ($null -ne $evt) {
+            # Drain all queued events
+            $allEvents = @($evt) + @(Get-Event)
+            foreach ($e in $allEvents) {
+                Remove-Event -EventIdentifier $e.EventIdentifier -ErrorAction SilentlyContinue
+
+                $fullPath = $e.SourceEventArgs.FullPath
+                if ($fullPath -and (-not (Test-IsExcluded -FilePath $fullPath))) {
+                    $relativePath = $fullPath.Replace($RootPath, '').TrimStart('\/')
+                    $timestamp = (Get-Date).ToString("HH:mm:ss")
+                    Write-Host "[$timestamp] [CHANGE DETECTED] $($e.SourceEventArgs.ChangeType): $relativePath" -ForegroundColor DarkCyan
+                    $LastEventTime = [DateTime]::UtcNow
+                }
+            }
+        }
 
         # Check if debounce window expired
-        if ($null -ne $script:LastEventTime -and (-not $script:IsSyncing)) {
-            $Elapsed = ([DateTime]::UtcNow - $script:LastEventTime).TotalSeconds
+        if ($null -ne $LastEventTime -and (-not $IsSyncing)) {
+            $Elapsed = ([DateTime]::UtcNow - $LastEventTime).TotalSeconds
 
             if ($Elapsed -ge $DebounceSeconds) {
-                $script:IsSyncing = $true
-                $script:LastEventTime = $null
+                $IsSyncing = $true
+                $LastEventTime = $null
 
                 $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-                Write-Host "`n[$((Get-Date).ToString('HH:mm:ss'))] [SYNC TRIGGERED] Debounce window elapsed. Checking Git status..." -ForegroundColor Yellow
+                Write-Host "`n[$((Get-Date).ToString('HH:mm:ss'))] [SYNC TRIGGERED] Debounce window ($DebounceSeconds s) elapsed. Checking Git status..." -ForegroundColor Yellow
 
                 try {
-                    # Check status
                     $status = (git status --porcelain 2>&1)
                     if ([string]::IsNullOrWhiteSpace($status)) {
                         Write-Host "[$((Get-Date).ToString('HH:mm:ss'))] [INFO] Working directory is clean. No sync required." -ForegroundColor Gray
@@ -119,18 +121,16 @@ try {
                 } catch {
                     Write-Host "[$((Get-Date).ToString('HH:mm:ss'))] [ERROR] Synchronization error: $_" -ForegroundColor Red
                 } finally {
-                    $script:PendingFiles.Clear()
-                    $script:IsSyncing = $false
+                    $IsSyncing = $false
                     Write-Host "[$((Get-Date).ToString('HH:mm:ss'))] [WATCHING] Listening for further file modifications...`n" -ForegroundColor DarkGray
                 }
             }
         }
     }
 } finally {
-    # Cleanup event listeners & watcher on exit
     Write-Host "`nTerminating auto-sync watcher..." -ForegroundColor Yellow
-    foreach ($handler in $Handlers) {
-        Unregister-Event -SourceIdentifier $handler.Name -ErrorAction SilentlyContinue
+    foreach ($sourceId in $SourceIds) {
+        Unregister-Event -SourceIdentifier $sourceId -ErrorAction SilentlyContinue
     }
     $Watcher.EnableRaisingEvents = $false
     $Watcher.Dispose()

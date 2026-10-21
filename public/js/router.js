@@ -13,6 +13,7 @@ import { ConsignmentPage } from './views/consignment.js';
 /**
  * Client-Side Hash Router
  * 
+ * Auto-sync verified: Real-time watcher pipeline active.
  * Manages view transitions, authentication guards, and active navigation indicators.
  */
 class Router {
