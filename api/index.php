@@ -20,11 +20,16 @@ set_error_handler(function(int $errno, string $errstr, string $errfile, int $err
 });
 
 set_exception_handler(function(\Throwable $exception) {
-    http_response_code(500);
+    $isDbError = ($exception instanceof \PDOException) || 
+                 str_contains($exception->getMessage(), 'Database connection failure') || 
+                 str_contains($exception->getMessage(), 'SQLSTATE');
+    $statusCode = $isDbError ? 503 : 500;
+
+    http_response_code($statusCode);
     header('Content-Type: application/json; charset=UTF-8');
     echo json_encode([
         'success' => false,
-        'message' => 'Internal Server Error',
+        'message' => $exception->getMessage() ?: 'Internal Server Error',
         'error'   => $exception->getMessage()
     ]);
     exit();
@@ -54,20 +59,29 @@ use Controllers\AuthController;
 $router = new Router();
 
 // ==========================================
-// 4. Register Authentication Endpoints
+// 4. Register Authentication & Diagnostic Endpoints
 // ==========================================
-$authController = new AuthController();
-
-// POST /api/auth/login
-$router->post('/auth/login', [$authController, 'login']);
+// POST /api/auth/login (Lazy instantiation)
+$router->post('/auth/login', [AuthController::class, 'login']);
 
 // POST /api/auth/demo-login
-$router->post('/auth/demo-login', [$authController, 'demoLogin']);
+$router->post('/auth/demo-login', [AuthController::class, 'demoLogin']);
 
 // GET /api/auth/me (Protected by AuthMiddleware)
-$router->get('/auth/me', [$authController, 'me'], [
+$router->get('/auth/me', [AuthController::class, 'me'], [
     [AuthMiddleware::class, 'authenticate']
 ]);
+
+// GET /api/health - Cloud & DevOps connectivity diagnostic endpoint
+$router->get('/health', function() {
+    $dbStatus = \Core\Database::checkConnection();
+    $statusCode = $dbStatus['connected'] ? 200 : 503;
+    Response::json([
+        'status'    => $dbStatus['connected'] ? 'healthy' : 'degraded',
+        'timestamp' => date('c'),
+        'database'  => $dbStatus
+    ], $statusCode);
+});
 
 // ==========================================
 // 5. Register Core Domain Resource Routes
