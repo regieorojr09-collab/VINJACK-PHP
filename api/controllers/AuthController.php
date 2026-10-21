@@ -22,10 +22,20 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
  * and demo credentials.
  */
 class AuthController {
-    private UserDAO $userDAO;
+    private ?UserDAO $userDAO = null;
 
-    public function __construct() {
-        $this->userDAO = new UserDAO();
+    public function __construct(?UserDAO $userDAO = null) {
+        $this->userDAO = $userDAO;
+    }
+
+    /**
+     * Lazy getter for UserDAO to prevent premature database connection on script bootstrapping.
+     */
+    private function getUserDAO(): UserDAO {
+        if ($this->userDAO === null) {
+            $this->userDAO = new UserDAO();
+        }
+        return $this->userDAO;
     }
 
     /**
@@ -57,7 +67,16 @@ class AuthController {
         $username = Validator::sanitize($data['username']);
         $password = (string)$data['password'];
 
-        $user = $this->userDAO->findByUsername($username);
+        try {
+            $user = $this->getUserDAO()->findByUsername($username);
+        } catch (\Throwable $e) {
+            error_log("Database connection failure during login: " . $e->getMessage());
+            Response::json([
+                'success' => false,
+                'message' => 'Database connection error: Unable to connect to MySQL database server. Please verify database credentials in Render.',
+                'error'   => $e->getMessage()
+            ], 503);
+        }
 
         if (!$user) {
             Response::json([
@@ -75,7 +94,11 @@ class AuthController {
         }
 
         if (($user['failed_attempts'] ?? 0) >= 5) {
-            $this->userDAO->lockAccount((int)$user['id']);
+            try {
+                $this->getUserDAO()->lockAccount((int)$user['id']);
+            } catch (\Throwable $e) {
+                error_log("Failed to lock account: " . $e->getMessage());
+            }
             Response::json([
                 'success' => false,
                 'message' => 'Account is locked due to too many failed attempts.'
@@ -84,11 +107,16 @@ class AuthController {
 
         // Verify Bcrypt Password Hash
         if (password_verify($password, $user['password'])) {
-            $this->userDAO->resetFailedAttempts((int)$user['id']);
+            try {
+                $this->getUserDAO()->resetFailedAttempts((int)$user['id']);
 
-            $permissions = [];
-            if ($user['role'] !== 'Super Admin') {
-                $permissions = $this->userDAO->getUserPermissions($user['role']);
+                $permissions = [];
+                if ($user['role'] !== 'Super Admin') {
+                    $permissions = $this->getUserDAO()->getUserPermissions($user['role']);
+                }
+            } catch (\Throwable $e) {
+                error_log("Database error loading permissions: " . $e->getMessage());
+                $permissions = [];
             }
 
             $payload = [
@@ -111,7 +139,11 @@ class AuthController {
                 'user'    => $user
             ], 200);
         } else {
-            $this->userDAO->incrementFailedAttempts((int)$user['id']);
+            try {
+                $this->getUserDAO()->incrementFailedAttempts((int)$user['id']);
+            } catch (\Throwable $e) {
+                error_log("Failed to increment failed attempts: " . $e->getMessage());
+            }
             Response::json([
                 'success' => false,
                 'message' => 'Invalid credentials.'
@@ -130,7 +162,17 @@ class AuthController {
         $authenticatedClaims = $userContext ?? AuthMiddleware::authenticate();
 
         $userId = (int)($authenticatedClaims['id'] ?? 0);
-        $user = $this->userDAO->findById($userId);
+
+        try {
+            $user = $this->getUserDAO()->findById($userId);
+        } catch (\Throwable $e) {
+            error_log("Database error in auth/me: " . $e->getMessage());
+            Response::json([
+                'success' => false,
+                'message' => 'Database error retrieving user profile.',
+                'error'   => $e->getMessage()
+            ], 503);
+        }
 
         if (!$user) {
             Response::json([
@@ -169,37 +211,47 @@ class AuthController {
         ];
 
         $targetUsername = $usernameMap[$role] ?? 'admin';
-        $user = $this->userDAO->findByUsername($targetUsername);
 
-        if ($user) {
-            $permissions = [];
-            if ($user['role'] !== 'Super Admin') {
-                $permissions = $this->userDAO->getUserPermissions($user['role']);
+        try {
+            $user = $this->getUserDAO()->findByUsername($targetUsername);
+
+            if ($user) {
+                $permissions = [];
+                if ($user['role'] !== 'Super Admin') {
+                    $permissions = $this->getUserDAO()->getUserPermissions($user['role']);
+                }
+
+                $payload = [
+                    'id'          => (int)$user['id'],
+                    'username'    => $user['username'],
+                    'full_name'   => $user['full_name'],
+                    'role'        => $user['role'],
+                    'permissions' => $permissions
+                ];
+
+                $token = JWT::encode($payload, JWT::getDefaultSecret(), 86400);
+                unset($user['password']);
+                $user['permissions'] = $permissions;
+
+                Response::json([
+                    'success' => true,
+                    'message' => 'Demo authentication successful.',
+                    'token'   => $token,
+                    'user'    => $user
+                ]);
+            } else {
+                Response::json([
+                    'success' => false,
+                    'message' => "Demo user for role '{$role}' not found in database."
+                ], 404);
             }
-
-            $payload = [
-                'id'          => (int)$user['id'],
-                'username'    => $user['username'],
-                'full_name'   => $user['full_name'],
-                'role'        => $user['role'],
-                'permissions' => $permissions
-            ];
-
-            $token = JWT::encode($payload, JWT::getDefaultSecret(), 86400);
-            unset($user['password']);
-            $user['permissions'] = $permissions;
-
-            Response::json([
-                'success' => true,
-                'message' => 'Demo authentication successful.',
-                'token'   => $token,
-                'user'    => $user
-            ]);
-        } else {
+        } catch (\Throwable $e) {
+            error_log("Database error in demo-login: " . $e->getMessage());
             Response::json([
                 'success' => false,
-                'message' => "Demo user for role '{$role}' not found."
-            ], 404);
+                'message' => 'Database connection error: Unable to connect to MySQL database for demo login.',
+                'error'   => $e->getMessage()
+            ], 503);
         }
     }
 
