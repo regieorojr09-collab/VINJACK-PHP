@@ -18,16 +18,28 @@ class Config {
     }
 
     private function loadDbConfig() {
-        $path = __DIR__ . '/database.xml';
-        if (file_exists($path)) {
+        $candidatePaths = [
+            __DIR__ . '/database.xml',
+            dirname(__DIR__, 2) . '/config/database.xml',
+        ];
+
+        $path = null;
+        foreach ($candidatePaths as $candidate) {
+            if (file_exists($candidate)) {
+                $path = $candidate;
+                break;
+            }
+        }
+
+        if ($path) {
             $xml = simplexml_load_file($path);
             if ($xml) {
                 $this->dbConfig = json_decode(json_encode($xml), true);
             } else {
-                throw new Exception("Failed to parse database.xml");
+                throw new Exception("Failed to parse database.xml at: {$path}");
             }
         } else {
-            throw new Exception("database.xml not found");
+            throw new Exception("database.xml not found in config directories");
         }
     }
 
