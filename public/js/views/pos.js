@@ -398,13 +398,22 @@ export const POSPage = {
     },
 
     async loadServices() {
-        // Fallback default services if not yet seeded
-        this.state.services = [
-            { id: 1, name: 'Oil Change & Filter Service', charge: 250.00, description: 'Complete engine flush and fluid replacement' },
-            { id: 2, name: 'Tire Mounting & Wheel Balancing', charge: 150.00, description: 'Static balancing & tire mount' },
-            { id: 3, name: 'Brake Caliper Cleaning & Pad Replacement', charge: 200.00, description: 'Caliper service & pad installation' },
-            { id: 4, name: 'Full Diagnostic & Tune-up', charge: 500.00, description: 'Engine timing, spark test, and tune-up' }
-        ];
+        try {
+            const res = await apiClient.get('services', { status: 'active' });
+            if (res.success && Array.isArray(res.data)) {
+                this.state.services = res.data.map(s => ({
+                    id: parseInt(s.id, 10),
+                    name: s.name,
+                    charge: parseFloat(s.charge),
+                    description: s.description || ''
+                }));
+            } else {
+                this.state.services = [];
+            }
+        } catch (err) {
+            console.error('Failed to load services from backend:', err);
+            this.state.services = [];
+        }
     },
 
     async loadCustomers() {
