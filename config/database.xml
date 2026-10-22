@@ -4,7 +4,7 @@
     <connection>
         <host>localhost</host>
         <port>3306</port>
-        <dbname>vinjack_schema</dbname>
+        <dbname>vinjack_db</dbname>
         <username>root</username>
         <password></password>
         <charset>utf8mb4</charset>
