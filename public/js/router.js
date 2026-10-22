@@ -7,7 +7,6 @@ import { SuppliersPage } from './views/suppliers.js';
 import { POSPage } from './views/pos.js';
 import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
-import { ConsignmentPage } from './views/consignment.js';
 import { UsersPage } from './views/users.js';
 import { CustomersPage } from './views/customers.js';
 import { AuditLogsPage } from './views/audit_logs.js';
@@ -31,7 +30,6 @@ class Router {
             '/inventory':       { view: ProductsPage,       title: 'Inventory & Products' },
             '/movements':       { view: MovementsPage,      title: 'Stock Movement Ledger' },
             '/ledger':          { view: MovementsPage,      title: 'Stock Movement Ledger' },
-            '/consignment':     { view: ConsignmentPage,    title: 'Consignment Payables & Settlements' },
             '/suppliers':       { view: SuppliersPage,      title: 'Suppliers Directory' },
             '/purchase-orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
             '/purchase_orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
@@ -97,6 +95,33 @@ class Router {
 
         document.getElementById('dropdown-logout-btn')?.addEventListener('click', handleLogout);
         document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+
+        // Setup Sidebar Collapse Mechanics
+        const sidebarToggle = document.getElementById('sidebar-toggle') || document.getElementById('sidebar-toggle-btn');
+        const sidebar = document.getElementById('sidebar') || document.getElementById('app-sidebar') || this.sidebarEl;
+
+        const updateCollapseButtonIcon = (isCollapsed) => {
+            if (!sidebarToggle) return;
+            sidebarToggle.innerHTML = isCollapsed ? '&rsaquo;' : '&lsaquo;';
+            sidebarToggle.setAttribute('title', isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar');
+        };
+
+        sidebarToggle?.addEventListener('click', () => {
+            sidebar?.classList.toggle('collapsed');
+            const isCollapsed = sidebar?.classList.contains('collapsed');
+            updateCollapseButtonIcon(isCollapsed);
+            try {
+                localStorage.setItem('sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            } catch (e) {}
+        });
+
+        // Restore collapsed state preference if saved
+        try {
+            if (localStorage.getItem('sidebar_collapsed') === 'true') {
+                sidebar?.classList.add('collapsed');
+                updateCollapseButtonIcon(true);
+            }
+        } catch (e) {}
 
         // Initialize UI visibility based on current session
         this.updateLayoutAuthVisibility(State.isAuthenticated());
