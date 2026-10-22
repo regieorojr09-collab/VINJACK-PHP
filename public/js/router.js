@@ -50,7 +50,7 @@ class Router {
     init() {
         this.appRoot = document.getElementById('app-root');
         this.pageTitleEl = document.getElementById('current-page-title');
-        this.sidebarEl = document.getElementById('app-sidebar');
+        this.sidebarEl = document.getElementById('sidebar') || document.getElementById('app-sidebar');
         this.topbarEl = document.getElementById('app-topbar');
 
         // Handle URL Hash Changes
@@ -157,8 +157,21 @@ class Router {
         if (!this.appRoot) return;
 
         // Update active navigation item in sidebar
+        const canonicalMap = {
+            '/sales': '/pos',
+            '/inventory': '/products',
+            '/ledger': '/products',
+            '/analytics': '/reports',
+            '/purchase_orders': '/purchase-orders',
+            '/audit_logs': '/audit-log',
+            '/audit-logs': '/audit-log',
+            '/user-management': '/users'
+        };
+        const activeTarget = canonicalMap[path] || path;
+
         document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.getAttribute('href') === `#${path}`) {
+            const href = link.getAttribute('href');
+            if (href === `#${path}` || href === `#${activeTarget}`) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');
