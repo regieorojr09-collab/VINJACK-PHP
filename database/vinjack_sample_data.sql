@@ -1,183 +1,196 @@
-﻿-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
---
--- Host: 127.0.0.1    Database: vinjack_db
--- ------------------------------------------------------
--- Server version	10.4.32-MariaDB
+-- VinJack Motorworks Sample Production Data
+SET FOREIGN_KEY_CHECKS = 0;
+SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+-- Table: categories
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('1', 'Tires & Wheels', 'Tubeless motorcycle tires, high-strength inner tubes, lightweight alloy rims', '2026-10-22 21:40:25', '2026-10-22 21:58:26');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('2', 'Brakes & Suspension', 'Brake pads, hydraulic calipers, disc rotors, gas shock absorbers, and suspension fork oil', '2026-10-22 21:40:25', '2026-10-22 21:58:26');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('3', 'Engine Oils & Lubricants', 'Synthetic engine oils, chain lube, coolant, and brake fluid', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('4', 'Electrical & Lighting', 'Batteries, spark plugs, LED headlights, and wiring components', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('5', 'Accessories & Gear', 'Helmets, riding gloves, saddle bags, and phone mounts', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('6', 'Engine Parts', 'Cylinders, piston kits, valves, spark plugs, and performance engine internal components', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES ('8', 'Accessories', 'Mini driving lights, alloy handlebar grips, side mirrors, phone mounts, and crash guards', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
---
--- Dumping data for table `categories`
---
+-- Table: brands
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('1', 'Motul', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('2', 'Brembo', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('3', 'Michelin', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('4', 'Pirelli', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('5', 'NGK', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('6', 'Yamaha', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('7', 'Honda', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES ('11', 'MotoWorld PH', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
-LOCK TABLES `categories` WRITE;
-/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES (1,'Tires & Wheels','Tubeless motorcycle tires, high-strength inner tubes, lightweight alloy rims','2026-10-22 21:40:25','2026-10-22 21:58:26'),(2,'Brakes & Suspension','Brake pads, hydraulic calipers, disc rotors, gas shock absorbers, and suspension fork oil','2026-10-22 21:40:25','2026-10-22 21:58:26'),(3,'Engine Oils & Lubricants','Synthetic engine oils, chain lube, coolant, and brake fluid','2026-10-22 21:40:25','2026-10-22 21:40:25'),(4,'Electrical & Lighting','Batteries, spark plugs, LED headlights, and wiring components','2026-10-22 21:40:25','2026-10-22 21:40:25'),(5,'Accessories & Gear','Helmets, riding gloves, saddle bags, and phone mounts','2026-10-22 21:40:25','2026-10-22 21:40:25'),(6,'Engine Parts','Cylinders, piston kits, valves, spark plugs, and performance engine internal components','2026-10-22 21:58:26','2026-10-22 21:58:26'),(8,'Accessories','Mini driving lights, alloy handlebar grips, side mirrors, phone mounts, and crash guards','2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: suppliers
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('1', 'Apex Moto Supplies Philippines', 'orders@apexmotoph.com', 'Marco Santos', '+63 917 123 4567', '128 Rizal Avenue, Caloocan City, Metro Manila', 'Approved', 'Terms', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('2', 'Brembo Philippines Distribution', 'sales@bremboph.com', 'Elena Cruz', '+63 918 987 6543', '45 EDSA, Mandaluyong City, Metro Manila', 'Approved', 'Cash', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('3', 'Motul Lubricants Direct Phils', 'supply@motuldirect.ph', 'Roberto Tan', '+63 922 456 7890', 'BGC Taguig City, Metro Manila', 'Approved', 'Consignment', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('4', 'Yamaha Genuine Parts Direct', 'sales@yamahaparts.ph', 'Kenji Sato', '+63 917 888 1234', 'Subic Bay Freeport Zone, Zambales', 'Approved', 'Terms', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('5', 'MotoWorld PH Official', 'distribution@motoworld.com.ph', 'Ramon Gomez', '+63 918 555 9876', 'Ortigas Center, Pasig City, Metro Manila', 'Approved', 'Cash', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES ('6', 'Honda Motor Parts & Components', 'orders@hondamotorparts.ph', 'Grace Tan', '+63 922 444 3322', 'Santa Rosa Commercial Complex, Laguna', 'Approved', 'Consignment', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
---
--- Dumping data for table `brands`
---
+-- Table: products
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('1', 'YAM-ENG-001', 'Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155)', '6', '6', '3850.00', '2800.00', '10', '0', '30', 'Low', 'active', 'set', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 23:13:56');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('2', 'HON-ENG-002', 'Honda Genuine Piston & Ring Assembly (Click 125/150)', '6', '7', '950.00', '650.00', '28', '0', '50', 'Healthy', 'active', 'set', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('3', 'NGK-SPK-003', 'NGK Laser Iridium Spark Plug (CR8EIX)', '6', '5', '320.00', '180.00', '65', '0', '100', 'Healthy', 'active', 'pc', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('4', 'MOT-OIL-004', 'Motul 7100 4T 10W-40 100% Synthetic Engine Oil 1L', '6', '1', '550.00', '380.00', '42', '10', '80', 'Healthy', 'active', 'bottle', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('5', 'BRM-CAL-005', 'Brembo 2-Piston Rear Brake Caliper Gold Edition', '2', '2', '4500.00', '3200.00', '3', '0', '10', 'Low', 'active', 'pc', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('6', 'BRM-PAD-006', 'Brembo Sintered Front Brake Pads Set', '2', '2', '750.00', '480.00', '19', '0', '40', 'Healthy', 'active', 'set', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('7', 'YAM-BRK-007', 'Yamaha Heavy Duty Front Brake Rotor Disc 260mm', '2', '6', '1650.00', '1100.00', '2', '0', '15', 'Critical', 'active', 'pc', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('8', 'MW-HL-008', 'MotoWorld Matrix Dual Color Mini Driving LED Light Kit', '8', '11', '1250.00', '750.00', '16', '5', '30', 'Healthy', 'active', 'set', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('9', 'MW-GRP-009', 'MotoWorld Ergonomic Alloy Handlebar Grips (Pair)', '8', '11', '390.00', '220.00', '24', '0', '50', 'Healthy', 'active', 'pair', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES ('10', 'MW-MRR-010', 'MotoWorld Stealth Winglet Rearview Side Mirrors', '8', '11', '799.00', '450.00', '0', '0', '25', 'Out of Stock', 'active', 'pair', NULL, '0', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
-LOCK TABLES `brands` WRITE;
-/*!40000 ALTER TABLE `brands` DISABLE KEYS */;
-INSERT INTO `brands` (`id`, `name`, `created_at`, `updated_at`) VALUES (1,'Motul','2026-10-22 21:40:25','2026-10-22 21:40:25'),(2,'Brembo','2026-10-22 21:40:25','2026-10-22 21:40:25'),(3,'Michelin','2026-10-22 21:40:25','2026-10-22 21:40:25'),(4,'Pirelli','2026-10-22 21:40:25','2026-10-22 21:40:25'),(5,'NGK','2026-10-22 21:40:25','2026-10-22 21:40:25'),(6,'Yamaha','2026-10-22 21:58:26','2026-10-22 21:58:26'),(7,'Honda','2026-10-22 21:58:26','2026-10-22 21:58:26'),(11,'MotoWorld PH','2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `brands` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: services
+INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES ('1', 'Oil Change & Filter Service', 'Complete engine flush, oil drain, filter replacement, and fluid top-up', '250.00', 'active', '2026-10-22 21:40:25', '2026-10-22 21:40:25');
+INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES ('2', 'Tire Mounting & Wheel Balancing', 'Dismount, inspect rim, mount new tire, and static wheel balance', '150.00', 'active', '2026-10-22 21:40:25', '2026-10-22 21:58:26');
+INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES ('3', 'Brake Caliper Cleaning & Pad Replacement', 'Clean pistons, inspect caliper seals, bleed brake line, and install brake pads', '200.00', 'active', '2026-10-22 21:40:25', '2026-10-22 21:58:26');
+INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES ('4', 'Full Diagnostic & Tune-up', 'Spark plug check, carb/fuel injection sync, battery testing, and drive chain adjustment', '500.00', 'active', '2026-10-22 21:40:25', '2026-10-22 21:58:26');
+INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES ('9', 'CVT Cleaning, Degreasing & Tuning', 'Disassemble transmission pulley, clean clutch bell, inspect rollers and belt wear', '350.00', 'active', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
---
--- Dumping data for table `suppliers`
---
+-- Table: customers
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES ('1', 'Juan Carlos Dela Cruz', 'juan.delacruz@example.com', '+63 917 111 2233', '14 Marikina Heights, Marikina City', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES ('2', 'Maria Teresa Santos', 'maria.santos@example.com', '+63 918 333 4455', '88 Katipunan Ave, Quezon City', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES ('3', 'Mark Anthony Reyes', 'mark.reyes@example.com', '+63 922 555 6677', '23 Marcos Highway, Antipolo City', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES ('4', 'Angelo Bautista', 'angelo.b@example.com', '+63 919 777 8899', '5 Barangka Drive, Mandaluyong City', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
-LOCK TABLES `suppliers` WRITE;
-/*!40000 ALTER TABLE `suppliers` DISABLE KEYS */;
-INSERT INTO `suppliers` (`id`, `name`, `email`, `contact_person`, `contact_number`, `address`, `status`, `default_payment_terms`, `created_at`, `updated_at`) VALUES (1,'Apex Moto Supplies Philippines','orders@apexmotoph.com','Marco Santos','+63 917 123 4567','128 Rizal Avenue, Caloocan City, Metro Manila','Approved','Terms','2026-10-22 21:40:25','2026-10-22 21:40:25'),(2,'Brembo Philippines Distribution','sales@bremboph.com','Elena Cruz','+63 918 987 6543','45 EDSA, Mandaluyong City, Metro Manila','Approved','Cash','2026-10-22 21:40:25','2026-10-22 21:40:25'),(3,'Motul Lubricants Direct Phils','supply@motuldirect.ph','Roberto Tan','+63 922 456 7890','BGC Taguig City, Metro Manila','Approved','Consignment','2026-10-22 21:40:25','2026-10-22 21:40:25'),(4,'Yamaha Genuine Parts Direct','sales@yamahaparts.ph','Kenji Sato','+63 917 888 1234','Subic Bay Freeport Zone, Zambales','Approved','Terms','2026-10-22 21:58:26','2026-10-22 21:58:26'),(5,'MotoWorld PH Official','distribution@motoworld.com.ph','Ramon Gomez','+63 918 555 9876','Ortigas Center, Pasig City, Metro Manila','Approved','Cash','2026-10-22 21:58:26','2026-10-22 21:58:26'),(6,'Honda Motor Parts & Components','orders@hondamotorparts.ph','Grace Tan','+63 922 444 3322','Santa Rosa Commercial Complex, Laguna','Approved','Consignment','2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `suppliers` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: purchase_orders
+INSERT INTO `purchase_orders` (`id`, `po_number`, `supplier_id`, `total_amount`, `po_type`, `consignment_method`, `terms_and_conditions`, `status`, `order_date`, `notes`, `supplier_notes`, `supplier_response_token`, `delivery_receipt_url`, `signed_agreement_url`, `countersigned_agreement_url`, `created_at`, `updated_at`) VALUES ('1', 'PO-2026-0001', '4', '52600.00', 'Purchase', 'System', NULL, 'Completed', '2026-09-28 15:58:26', 'Monthly fast-moving engine parts replenishment from Yamaha Direct', NULL, NULL, NULL, NULL, NULL, '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `purchase_orders` (`id`, `po_number`, `supplier_id`, `total_amount`, `po_type`, `consignment_method`, `terms_and_conditions`, `status`, `order_date`, `notes`, `supplier_notes`, `supplier_response_token`, `delivery_receipt_url`, `signed_agreement_url`, `countersigned_agreement_url`, `created_at`, `updated_at`) VALUES ('2', 'PO-2026-0002', '5', '15650.00', 'Purchase', 'System', NULL, 'Approved', '2026-10-17 15:58:26', 'Restock of MotoWorld LED lights and handlebar grips', NULL, NULL, NULL, NULL, NULL, '2026-10-22 21:58:26', '2026-10-22 21:58:26');
+INSERT INTO `purchase_orders` (`id`, `po_number`, `supplier_id`, `total_amount`, `po_type`, `consignment_method`, `terms_and_conditions`, `status`, `order_date`, `notes`, `supplier_notes`, `supplier_response_token`, `delivery_receipt_url`, `signed_agreement_url`, `countersigned_agreement_url`, `created_at`, `updated_at`) VALUES ('3', 'PO-2026-0003', '6', '22000.00', 'Consignment', 'System', NULL, 'Pending', '2026-10-21 15:58:26', 'Consignment request for Honda Click piston kits & spark plugs', NULL, NULL, NULL, NULL, NULL, '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
---
--- Dumping data for table `products`
---
+-- Table: purchase_order_items
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('1', '1', '1', '10', '2800.00', '28000.00', NULL, '1', '10');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('2', '1', '7', '12', '1100.00', '13200.00', NULL, '1', '12');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('3', '1', '4', '30', '380.00', '11400.00', NULL, '1', '30');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('4', '2', '8', '15', '750.00', '11250.00', NULL, '1', '0');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('5', '2', '9', '20', '220.00', '4400.00', NULL, '1', '0');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('6', '3', '2', '20', '650.00', '13000.00', NULL, '1', '0');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES ('7', '3', '3', '50', '180.00', '9000.00', NULL, '1', '0');
 
-LOCK TABLES `products` WRITE;
-/*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` (`id`, `item_code`, `name`, `category_id`, `brand_id`, `price`, `default_cost`, `quantity`, `consigned_stock`, `max_stock`, `stock_status`, `status`, `unit`, `image`, `is_serialized`, `created_at`, `updated_at`) VALUES (1,'YAM-ENG-001','Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155)',6,6,3850.00,2800.00,10,0,30,'Low','active','set',NULL,0,'2026-10-22 21:58:26','2026-10-22 23:13:56'),(2,'HON-ENG-002','Honda Genuine Piston & Ring Assembly (Click 125/150)',6,7,950.00,650.00,28,0,50,'Healthy','active','set',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(3,'NGK-SPK-003','NGK Laser Iridium Spark Plug (CR8EIX)',6,5,320.00,180.00,65,0,100,'Healthy','active','pc',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(4,'MOT-OIL-004','Motul 7100 4T 10W-40 100% Synthetic Engine Oil 1L',6,1,550.00,380.00,42,10,80,'Healthy','active','bottle',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(5,'BRM-CAL-005','Brembo 2-Piston Rear Brake Caliper Gold Edition',2,2,4500.00,3200.00,3,0,10,'Low','active','pc',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(6,'BRM-PAD-006','Brembo Sintered Front Brake Pads Set',2,2,750.00,480.00,19,0,40,'Healthy','active','set',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(7,'YAM-BRK-007','Yamaha Heavy Duty Front Brake Rotor Disc 260mm',2,6,1650.00,1100.00,2,0,15,'Critical','active','pc',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(8,'MW-HL-008','MotoWorld Matrix Dual Color Mini Driving LED Light Kit',8,11,1250.00,750.00,16,5,30,'Healthy','active','set',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(9,'MW-GRP-009','MotoWorld Ergonomic Alloy Handlebar Grips (Pair)',8,11,390.00,220.00,24,0,50,'Healthy','active','pair',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(10,'MW-MRR-010','MotoWorld Stealth Winglet Rearview Side Mirrors',8,11,799.00,450.00,0,0,25,'Out of Stock','active','pair',NULL,0,'2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `products` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: deliveries
+INSERT INTO `deliveries` (`id`, `supplier_id`, `purchase_order_id`, `delivery_date`, `delivery_type`, `total_cost`, `recorded_by`, `created_at`, `updated_at`) VALUES ('1', '4', '1', '2026-10-01 15:58:26', 'Purchase', '52600.00', '1', '2026-10-22 21:58:26', '2026-10-22 21:58:26');
 
---
--- Dumping data for table `product_supplier_costs`
---
+-- Table: delivery_items
+INSERT INTO `delivery_items` (`id`, `delivery_id`, `product_id`, `quantity`, `cost_at_time`) VALUES ('1', '1', '1', '10', '2800.00');
+INSERT INTO `delivery_items` (`id`, `delivery_id`, `product_id`, `quantity`, `cost_at_time`) VALUES ('2', '1', '7', '12', '1100.00');
+INSERT INTO `delivery_items` (`id`, `delivery_id`, `product_id`, `quantity`, `cost_at_time`) VALUES ('3', '1', '4', '30', '380.00');
 
-LOCK TABLES `product_supplier_costs` WRITE;
-/*!40000 ALTER TABLE `product_supplier_costs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product_supplier_costs` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: sales
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('1', '9080.00', '2', '1', NULL, NULL, '0', '2026-09-25 15:41:23', '2026-09-25 15:41:23');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('2', '1250.00', '3', '4', NULL, NULL, '0', '2026-09-26 17:02:54', '2026-09-26 17:02:54');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('3', '7700.00', '3', NULL, NULL, NULL, '0', '2026-09-28 10:23:17', '2026-09-28 10:23:17');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('4', '1900.00', '1', '1', NULL, NULL, '0', '2026-09-30 17:26:05', '2026-09-30 17:26:05');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('5', '1390.00', '1', '4', NULL, NULL, '0', '2026-10-01 17:06:29', '2026-10-01 17:06:29');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('6', '5210.00', '2', '4', NULL, NULL, '0', '2026-10-02 08:30:41', '2026-10-02 08:30:41');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('7', '1750.00', '1', NULL, NULL, NULL, '0', '2026-10-03 15:58:11', '2026-10-03 15:58:11');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('8', '3450.00', '3', NULL, NULL, NULL, '0', '2026-10-05 10:54:29', '2026-10-05 10:54:29');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('9', '1070.00', '2', NULL, NULL, NULL, '0', '2026-10-06 10:32:07', '2026-10-06 10:32:07');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('10', '3940.00', '3', '4', NULL, NULL, '0', '2026-10-07 09:22:01', '2026-10-07 09:22:01');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('11', '10500.00', '1', '4', NULL, NULL, '0', '2026-10-09 12:18:35', '2026-10-09 12:18:35');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('12', '9640.00', '2', '1', NULL, NULL, '0', '2026-10-11 14:36:19', '2026-10-11 14:36:19');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('13', '750.00', '2', NULL, NULL, NULL, '0', '2026-10-12 11:00:53', '2026-10-12 11:00:53');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('14', '5020.00', '2', '2', NULL, NULL, '0', '2026-10-13 11:08:41', '2026-10-13 11:08:41');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('15', '1100.00', '3', '2', NULL, NULL, '0', '2026-10-14 11:33:03', '2026-10-14 11:33:03');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('16', '9700.00', '1', '3', NULL, NULL, '0', '2026-10-16 10:14:16', '2026-10-16 10:14:16');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('17', '6000.00', '3', '1', NULL, NULL, '0', '2026-10-17 09:42:20', '2026-10-17 09:42:20');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('18', '2000.00', '1', '3', NULL, NULL, '0', '2026-10-18 10:14:42', '2026-10-18 10:14:42');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('19', '6050.00', '2', '1', NULL, NULL, '0', '2026-10-20 11:00:06', '2026-10-20 11:00:06');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('20', '7700.00', '1', '1', NULL, NULL, '0', '2026-10-21 14:32:31', '2026-10-21 14:32:31');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('21', '7700.00', '1', NULL, NULL, NULL, '0', '2026-10-22 23:12:36', '2026-10-22 23:12:36');
+INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES ('22', '7700.00', '1', NULL, NULL, NULL, '0', '2026-10-22 23:13:56', '2026-10-22 23:13:56');
 
---
--- Dumping data for table `services`
---
+-- Table: sale_items
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('1', '1', '5', '1', '4500.00', '3200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('2', '1', '7', '2', '1650.00', '2200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('3', '1', '9', '2', '390.00', '440.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('4', '2', '8', '1', '1250.00', '750.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('5', '3', '1', '2', '3850.00', '5600.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('6', '4', '7', '1', '1650.00', '1100.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('7', '5', '3', '2', '320.00', '360.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('8', '5', '4', '1', '550.00', '380.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('9', '6', '3', '1', '320.00', '180.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('10', '6', '5', '1', '4500.00', '3200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('11', '6', '9', '1', '390.00', '220.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('12', '7', '8', '1', '1250.00', '750.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('13', '8', '7', '2', '1650.00', '2200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('14', '9', '3', '1', '320.00', '180.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('15', '9', '6', '1', '750.00', '480.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('16', '10', '3', '2', '320.00', '360.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('17', '10', '7', '2', '1650.00', '2200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('18', '11', '5', '2', '4500.00', '6400.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('19', '11', '6', '2', '750.00', '960.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('20', '12', '3', '2', '320.00', '360.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('21', '12', '5', '2', '4500.00', '6400.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('22', '13', '6', '1', '750.00', '480.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('23', '14', '3', '1', '320.00', '180.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('24', '14', '5', '1', '4500.00', '3200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('25', '15', '4', '2', '550.00', '760.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('26', '16', '1', '2', '3850.00', '5600.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('27', '16', '4', '2', '550.00', '760.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('28', '16', '6', '1', '750.00', '480.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('29', '17', '2', '1', '950.00', '650.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('30', '17', '4', '1', '550.00', '380.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('31', '17', '5', '1', '4500.00', '3200.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('32', '18', '6', '2', '750.00', '960.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('33', '19', '2', '2', '950.00', '1300.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('34', '19', '7', '1', '1650.00', '1100.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('35', '19', '8', '2', '1250.00', '1500.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('36', '20', '1', '2', '3850.00', '5600.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('37', '21', '1', '2', '3850.00', '2800.00');
+INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES ('38', '22', '1', '2', '3850.00', '2800.00');
 
-LOCK TABLES `services` WRITE;
-/*!40000 ALTER TABLE `services` DISABLE KEYS */;
-INSERT INTO `services` (`id`, `name`, `description`, `charge`, `status`, `created_at`, `updated_at`) VALUES (1,'Oil Change & Filter Service','Complete engine flush, oil drain, filter replacement, and fluid top-up',250.00,'active','2026-10-22 21:40:25','2026-10-22 21:40:25'),(2,'Tire Mounting & Wheel Balancing','Dismount, inspect rim, mount new tire, and static wheel balance',150.00,'active','2026-10-22 21:40:25','2026-10-22 21:58:26'),(3,'Brake Caliper Cleaning & Pad Replacement','Clean pistons, inspect caliper seals, bleed brake line, and install brake pads',200.00,'active','2026-10-22 21:40:25','2026-10-22 21:58:26'),(4,'Full Diagnostic & Tune-up','Spark plug check, carb/fuel injection sync, battery testing, and drive chain adjustment',500.00,'active','2026-10-22 21:40:25','2026-10-22 21:58:26'),(9,'CVT Cleaning, Degreasing & Tuning','Disassemble transmission pulley, clean clutch bell, inspect rollers and belt wear',350.00,'active','2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `services` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Table: sale_services
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('1', '1', '4', '500.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('2', '4', '1', '250.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('3', '5', '3', '200.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('4', '7', '4', '500.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('5', '8', '2', '150.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('6', '14', '3', '200.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('7', '16', '2', '150.00');
+INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES ('8', '18', '4', '500.00');
 
---
--- Dumping data for table `customers`
---
+-- Table: movements
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('1', '1', 'DELIVERY (PO)', '10', '4', '14', 'PO-2026-0001', 'Stock replenishment from PO-2026-0001 (Delivery #1)', '1', '2026-10-01 15:58:26');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('2', '7', 'DELIVERY (PO)', '12', '0', '2', 'PO-2026-0001', 'Stock replenishment from PO-2026-0001 (Delivery #1)', '1', '2026-10-01 15:58:26');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('3', '4', 'DELIVERY (PO)', '30', '12', '42', 'PO-2026-0001', 'Stock replenishment from PO-2026-0001 (Delivery #1)', '1', '2026-10-01 15:58:26');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('4', '5', 'SALE', '-1', '30', '29', 'SALE-1', 'POS Sale transaction #1', '2', '2026-09-25 15:41:23');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('5', '7', 'SALE', '-2', '30', '28', 'SALE-1', 'POS Sale transaction #1', '2', '2026-09-25 15:41:23');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('6', '9', 'SALE', '-2', '30', '28', 'SALE-1', 'POS Sale transaction #1', '2', '2026-09-25 15:41:23');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('7', '8', 'SALE', '-1', '30', '29', 'SALE-2', 'POS Sale transaction #2', '3', '2026-09-26 17:02:54');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('8', '1', 'SALE', '-2', '30', '28', 'SALE-3', 'POS Sale transaction #3', '3', '2026-09-28 10:23:17');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('9', '7', 'SALE', '-1', '30', '29', 'SALE-4', 'POS Sale transaction #4', '1', '2026-09-30 17:26:05');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('10', '3', 'SALE', '-2', '30', '28', 'SALE-5', 'POS Sale transaction #5', '1', '2026-10-01 17:06:29');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('11', '4', 'SALE', '-1', '30', '29', 'SALE-5', 'POS Sale transaction #5', '1', '2026-10-01 17:06:29');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('12', '3', 'SALE', '-1', '30', '29', 'SALE-6', 'POS Sale transaction #6', '2', '2026-10-02 08:30:41');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('13', '5', 'SALE', '-1', '30', '29', 'SALE-6', 'POS Sale transaction #6', '2', '2026-10-02 08:30:41');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('14', '9', 'SALE', '-1', '30', '29', 'SALE-6', 'POS Sale transaction #6', '2', '2026-10-02 08:30:41');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('15', '8', 'SALE', '-1', '30', '29', 'SALE-7', 'POS Sale transaction #7', '1', '2026-10-03 15:58:11');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('16', '7', 'SALE', '-2', '30', '28', 'SALE-8', 'POS Sale transaction #8', '3', '2026-10-05 10:54:29');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('17', '3', 'SALE', '-1', '30', '29', 'SALE-9', 'POS Sale transaction #9', '2', '2026-10-06 10:32:07');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('18', '6', 'SALE', '-1', '30', '29', 'SALE-9', 'POS Sale transaction #9', '2', '2026-10-06 10:32:07');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('19', '3', 'SALE', '-2', '30', '28', 'SALE-10', 'POS Sale transaction #10', '3', '2026-10-07 09:22:01');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('20', '7', 'SALE', '-2', '30', '28', 'SALE-10', 'POS Sale transaction #10', '3', '2026-10-07 09:22:01');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('21', '5', 'SALE', '-2', '30', '28', 'SALE-11', 'POS Sale transaction #11', '1', '2026-10-09 12:18:35');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('22', '6', 'SALE', '-2', '30', '28', 'SALE-11', 'POS Sale transaction #11', '1', '2026-10-09 12:18:35');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('23', '3', 'SALE', '-2', '30', '28', 'SALE-12', 'POS Sale transaction #12', '2', '2026-10-11 14:36:19');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('24', '5', 'SALE', '-2', '30', '28', 'SALE-12', 'POS Sale transaction #12', '2', '2026-10-11 14:36:19');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('25', '6', 'SALE', '-1', '30', '29', 'SALE-13', 'POS Sale transaction #13', '2', '2026-10-12 11:00:53');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('26', '3', 'SALE', '-1', '30', '29', 'SALE-14', 'POS Sale transaction #14', '2', '2026-10-13 11:08:41');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('27', '5', 'SALE', '-1', '30', '29', 'SALE-14', 'POS Sale transaction #14', '2', '2026-10-13 11:08:41');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('28', '4', 'SALE', '-2', '30', '28', 'SALE-15', 'POS Sale transaction #15', '3', '2026-10-14 11:33:03');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('29', '1', 'SALE', '-2', '30', '28', 'SALE-16', 'POS Sale transaction #16', '1', '2026-10-16 10:14:16');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('30', '4', 'SALE', '-2', '30', '28', 'SALE-16', 'POS Sale transaction #16', '1', '2026-10-16 10:14:16');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('31', '6', 'SALE', '-1', '30', '29', 'SALE-16', 'POS Sale transaction #16', '1', '2026-10-16 10:14:16');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('32', '2', 'SALE', '-1', '30', '29', 'SALE-17', 'POS Sale transaction #17', '3', '2026-10-17 09:42:20');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('33', '4', 'SALE', '-1', '30', '29', 'SALE-17', 'POS Sale transaction #17', '3', '2026-10-17 09:42:20');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('34', '5', 'SALE', '-1', '30', '29', 'SALE-17', 'POS Sale transaction #17', '3', '2026-10-17 09:42:20');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('35', '6', 'SALE', '-2', '30', '28', 'SALE-18', 'POS Sale transaction #18', '1', '2026-10-18 10:14:42');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('36', '2', 'SALE', '-2', '30', '28', 'SALE-19', 'POS Sale transaction #19', '2', '2026-10-20 11:00:06');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('37', '7', 'SALE', '-1', '30', '29', 'SALE-19', 'POS Sale transaction #19', '2', '2026-10-20 11:00:06');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('38', '8', 'SALE', '-2', '30', '28', 'SALE-19', 'POS Sale transaction #19', '2', '2026-10-20 11:00:06');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('39', '1', 'SALE', '-2', '30', '28', 'SALE-20', 'POS Sale transaction #20', '1', '2026-10-21 14:32:31');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('40', '1', 'SALE', '-2', '14', '12', 'SALE-21', 'POS Sale checkout for Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155) (SKU: YAM-ENG-001)', '1', '2026-10-22 23:12:36');
+INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES ('41', '1', 'SALE', '-2', '12', '10', 'SALE-22', 'POS Sale checkout for Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155) (SKU: YAM-ENG-001)', '1', '2026-10-22 23:13:56');
 
-LOCK TABLES `customers` WRITE;
-/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES (1,'Juan Carlos Dela Cruz','juan.delacruz@example.com','+63 917 111 2233','14 Marikina Heights, Marikina City','2026-10-22 21:58:26','2026-10-22 21:58:26'),(2,'Maria Teresa Santos','maria.santos@example.com','+63 918 333 4455','88 Katipunan Ave, Quezon City','2026-10-22 21:58:26','2026-10-22 21:58:26'),(3,'Mark Anthony Reyes','mark.reyes@example.com','+63 922 555 6677','23 Marcos Highway, Antipolo City','2026-10-22 21:58:26','2026-10-22 21:58:26'),(4,'Angelo Bautista','angelo.b@example.com','+63 919 777 8899','5 Barangka Drive, Mandaluyong City','2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `motorcycles`
---
-
-LOCK TABLES `motorcycles` WRITE;
-/*!40000 ALTER TABLE `motorcycles` DISABLE KEYS */;
-/*!40000 ALTER TABLE `motorcycles` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `purchase_orders`
---
-
-LOCK TABLES `purchase_orders` WRITE;
-/*!40000 ALTER TABLE `purchase_orders` DISABLE KEYS */;
-INSERT INTO `purchase_orders` (`id`, `po_number`, `supplier_id`, `total_amount`, `po_type`, `consignment_method`, `terms_and_conditions`, `status`, `order_date`, `notes`, `supplier_notes`, `supplier_response_token`, `delivery_receipt_url`, `signed_agreement_url`, `countersigned_agreement_url`, `created_at`, `updated_at`) VALUES (1,'PO-2026-0001',4,52600.00,'Purchase','System',NULL,'Completed','2026-09-28 15:58:26','Monthly fast-moving engine parts replenishment from Yamaha Direct',NULL,NULL,NULL,NULL,NULL,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(2,'PO-2026-0002',5,15650.00,'Purchase','System',NULL,'Approved','2026-10-17 15:58:26','Restock of MotoWorld LED lights and handlebar grips',NULL,NULL,NULL,NULL,NULL,'2026-10-22 21:58:26','2026-10-22 21:58:26'),(3,'PO-2026-0003',6,22000.00,'Consignment','System',NULL,'Pending','2026-10-21 15:58:26','Consignment request for Honda Click piston kits & spark plugs',NULL,NULL,NULL,NULL,NULL,'2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `purchase_orders` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `purchase_order_items`
---
-
-LOCK TABLES `purchase_order_items` WRITE;
-/*!40000 ALTER TABLE `purchase_order_items` DISABLE KEYS */;
-INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `product_id`, `quantity`, `cost`, `total`, `supplier_updated_cost`, `is_available`, `quantity_received`) VALUES (1,1,1,10,2800.00,28000.00,NULL,1,10),(2,1,7,12,1100.00,13200.00,NULL,1,12),(3,1,4,30,380.00,11400.00,NULL,1,30),(4,2,8,15,750.00,11250.00,NULL,1,0),(5,2,9,20,220.00,4400.00,NULL,1,0),(6,3,2,20,650.00,13000.00,NULL,1,0),(7,3,3,50,180.00,9000.00,NULL,1,0);
-/*!40000 ALTER TABLE `purchase_order_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `deliveries`
---
-
-LOCK TABLES `deliveries` WRITE;
-/*!40000 ALTER TABLE `deliveries` DISABLE KEYS */;
-INSERT INTO `deliveries` (`id`, `supplier_id`, `purchase_order_id`, `delivery_date`, `delivery_type`, `total_cost`, `recorded_by`, `created_at`, `updated_at`) VALUES (1,4,1,'2026-10-01 15:58:26','Purchase',52600.00,1,'2026-10-22 21:58:26','2026-10-22 21:58:26');
-/*!40000 ALTER TABLE `deliveries` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `delivery_items`
---
-
-LOCK TABLES `delivery_items` WRITE;
-/*!40000 ALTER TABLE `delivery_items` DISABLE KEYS */;
-INSERT INTO `delivery_items` (`id`, `delivery_id`, `product_id`, `quantity`, `cost_at_time`) VALUES (1,1,1,10,2800.00),(2,1,7,12,1100.00),(3,1,4,30,380.00);
-/*!40000 ALTER TABLE `delivery_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `sales`
---
-
-LOCK TABLES `sales` WRITE;
-/*!40000 ALTER TABLE `sales` DISABLE KEYS */;
-INSERT INTO `sales` (`id`, `total_amount`, `recorded_by`, `customer_id`, `motorcycle_id`, `customer_receipt_image`, `is_manual_entry`, `created_at`, `updated_at`) VALUES (1,9080.00,2,1,NULL,NULL,0,'2026-09-25 15:41:23','2026-09-25 15:41:23'),(2,1250.00,3,4,NULL,NULL,0,'2026-09-26 17:02:54','2026-09-26 17:02:54'),(3,7700.00,3,NULL,NULL,NULL,0,'2026-09-28 10:23:17','2026-09-28 10:23:17'),(4,1900.00,1,1,NULL,NULL,0,'2026-09-30 17:26:05','2026-09-30 17:26:05'),(5,1390.00,1,4,NULL,NULL,0,'2026-10-01 17:06:29','2026-10-01 17:06:29'),(6,5210.00,2,4,NULL,NULL,0,'2026-10-02 08:30:41','2026-10-02 08:30:41'),(7,1750.00,1,NULL,NULL,NULL,0,'2026-10-03 15:58:11','2026-10-03 15:58:11'),(8,3450.00,3,NULL,NULL,NULL,0,'2026-10-05 10:54:29','2026-10-05 10:54:29'),(9,1070.00,2,NULL,NULL,NULL,0,'2026-10-06 10:32:07','2026-10-06 10:32:07'),(10,3940.00,3,4,NULL,NULL,0,'2026-10-07 09:22:01','2026-10-07 09:22:01'),(11,10500.00,1,4,NULL,NULL,0,'2026-10-09 12:18:35','2026-10-09 12:18:35'),(12,9640.00,2,1,NULL,NULL,0,'2026-10-11 14:36:19','2026-10-11 14:36:19'),(13,750.00,2,NULL,NULL,NULL,0,'2026-10-12 11:00:53','2026-10-12 11:00:53'),(14,5020.00,2,2,NULL,NULL,0,'2026-10-13 11:08:41','2026-10-13 11:08:41'),(15,1100.00,3,2,NULL,NULL,0,'2026-10-14 11:33:03','2026-10-14 11:33:03'),(16,9700.00,1,3,NULL,NULL,0,'2026-10-16 10:14:16','2026-10-16 10:14:16'),(17,6000.00,3,1,NULL,NULL,0,'2026-10-17 09:42:20','2026-10-17 09:42:20'),(18,2000.00,1,3,NULL,NULL,0,'2026-10-18 10:14:42','2026-10-18 10:14:42'),(19,6050.00,2,1,NULL,NULL,0,'2026-10-20 11:00:06','2026-10-20 11:00:06'),(20,7700.00,1,1,NULL,NULL,0,'2026-10-21 14:32:31','2026-10-21 14:32:31'),(21,7700.00,1,NULL,NULL,NULL,0,'2026-10-22 23:12:36','2026-10-22 23:12:36'),(22,7700.00,1,NULL,NULL,NULL,0,'2026-10-22 23:13:56','2026-10-22 23:13:56');
-/*!40000 ALTER TABLE `sales` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `sale_items`
---
-
-LOCK TABLES `sale_items` WRITE;
-/*!40000 ALTER TABLE `sale_items` DISABLE KEYS */;
-INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `quantity`, `price_at_time`, `cost_of_goods_sold`) VALUES (1,1,5,1,4500.00,3200.00),(2,1,7,2,1650.00,2200.00),(3,1,9,2,390.00,440.00),(4,2,8,1,1250.00,750.00),(5,3,1,2,3850.00,5600.00),(6,4,7,1,1650.00,1100.00),(7,5,3,2,320.00,360.00),(8,5,4,1,550.00,380.00),(9,6,3,1,320.00,180.00),(10,6,5,1,4500.00,3200.00),(11,6,9,1,390.00,220.00),(12,7,8,1,1250.00,750.00),(13,8,7,2,1650.00,2200.00),(14,9,3,1,320.00,180.00),(15,9,6,1,750.00,480.00),(16,10,3,2,320.00,360.00),(17,10,7,2,1650.00,2200.00),(18,11,5,2,4500.00,6400.00),(19,11,6,2,750.00,960.00),(20,12,3,2,320.00,360.00),(21,12,5,2,4500.00,6400.00),(22,13,6,1,750.00,480.00),(23,14,3,1,320.00,180.00),(24,14,5,1,4500.00,3200.00),(25,15,4,2,550.00,760.00),(26,16,1,2,3850.00,5600.00),(27,16,4,2,550.00,760.00),(28,16,6,1,750.00,480.00),(29,17,2,1,950.00,650.00),(30,17,4,1,550.00,380.00),(31,17,5,1,4500.00,3200.00),(32,18,6,2,750.00,960.00),(33,19,2,2,950.00,1300.00),(34,19,7,1,1650.00,1100.00),(35,19,8,2,1250.00,1500.00),(36,20,1,2,3850.00,5600.00),(37,21,1,2,3850.00,2800.00),(38,22,1,2,3850.00,2800.00);
-/*!40000 ALTER TABLE `sale_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `sale_services`
---
-
-LOCK TABLES `sale_services` WRITE;
-/*!40000 ALTER TABLE `sale_services` DISABLE KEYS */;
-INSERT INTO `sale_services` (`id`, `sale_id`, `service_id`, `price_at_time`) VALUES (1,1,4,500.00),(2,4,1,250.00),(3,5,3,200.00),(4,7,4,500.00),(5,8,2,150.00),(6,14,3,200.00),(7,16,2,150.00),(8,18,4,500.00);
-/*!40000 ALTER TABLE `sale_services` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `movements`
---
-
-LOCK TABLES `movements` WRITE;
-/*!40000 ALTER TABLE `movements` DISABLE KEYS */;
-INSERT INTO `movements` (`id`, `product_id`, `type`, `quantity_change`, `stock_before`, `stock_after`, `reference_id`, `notes`, `recorded_by`, `created_at`) VALUES (1,1,'DELIVERY (PO)',10,4,14,'PO-2026-0001','Stock replenishment from PO-2026-0001 (Delivery #1)',1,'2026-10-01 15:58:26'),(2,7,'DELIVERY (PO)',12,0,2,'PO-2026-0001','Stock replenishment from PO-2026-0001 (Delivery #1)',1,'2026-10-01 15:58:26'),(3,4,'DELIVERY (PO)',30,12,42,'PO-2026-0001','Stock replenishment from PO-2026-0001 (Delivery #1)',1,'2026-10-01 15:58:26'),(4,5,'SALE',-1,30,29,'SALE-1','POS Sale transaction #1',2,'2026-09-25 15:41:23'),(5,7,'SALE',-2,30,28,'SALE-1','POS Sale transaction #1',2,'2026-09-25 15:41:23'),(6,9,'SALE',-2,30,28,'SALE-1','POS Sale transaction #1',2,'2026-09-25 15:41:23'),(7,8,'SALE',-1,30,29,'SALE-2','POS Sale transaction #2',3,'2026-09-26 17:02:54'),(8,1,'SALE',-2,30,28,'SALE-3','POS Sale transaction #3',3,'2026-09-28 10:23:17'),(9,7,'SALE',-1,30,29,'SALE-4','POS Sale transaction #4',1,'2026-09-30 17:26:05'),(10,3,'SALE',-2,30,28,'SALE-5','POS Sale transaction #5',1,'2026-10-01 17:06:29'),(11,4,'SALE',-1,30,29,'SALE-5','POS Sale transaction #5',1,'2026-10-01 17:06:29'),(12,3,'SALE',-1,30,29,'SALE-6','POS Sale transaction #6',2,'2026-10-02 08:30:41'),(13,5,'SALE',-1,30,29,'SALE-6','POS Sale transaction #6',2,'2026-10-02 08:30:41'),(14,9,'SALE',-1,30,29,'SALE-6','POS Sale transaction #6',2,'2026-10-02 08:30:41'),(15,8,'SALE',-1,30,29,'SALE-7','POS Sale transaction #7',1,'2026-10-03 15:58:11'),(16,7,'SALE',-2,30,28,'SALE-8','POS Sale transaction #8',3,'2026-10-05 10:54:29'),(17,3,'SALE',-1,30,29,'SALE-9','POS Sale transaction #9',2,'2026-10-06 10:32:07'),(18,6,'SALE',-1,30,29,'SALE-9','POS Sale transaction #9',2,'2026-10-06 10:32:07'),(19,3,'SALE',-2,30,28,'SALE-10','POS Sale transaction #10',3,'2026-10-07 09:22:01'),(20,7,'SALE',-2,30,28,'SALE-10','POS Sale transaction #10',3,'2026-10-07 09:22:01'),(21,5,'SALE',-2,30,28,'SALE-11','POS Sale transaction #11',1,'2026-10-09 12:18:35'),(22,6,'SALE',-2,30,28,'SALE-11','POS Sale transaction #11',1,'2026-10-09 12:18:35'),(23,3,'SALE',-2,30,28,'SALE-12','POS Sale transaction #12',2,'2026-10-11 14:36:19'),(24,5,'SALE',-2,30,28,'SALE-12','POS Sale transaction #12',2,'2026-10-11 14:36:19'),(25,6,'SALE',-1,30,29,'SALE-13','POS Sale transaction #13',2,'2026-10-12 11:00:53'),(26,3,'SALE',-1,30,29,'SALE-14','POS Sale transaction #14',2,'2026-10-13 11:08:41'),(27,5,'SALE',-1,30,29,'SALE-14','POS Sale transaction #14',2,'2026-10-13 11:08:41'),(28,4,'SALE',-2,30,28,'SALE-15','POS Sale transaction #15',3,'2026-10-14 11:33:03'),(29,1,'SALE',-2,30,28,'SALE-16','POS Sale transaction #16',1,'2026-10-16 10:14:16'),(30,4,'SALE',-2,30,28,'SALE-16','POS Sale transaction #16',1,'2026-10-16 10:14:16'),(31,6,'SALE',-1,30,29,'SALE-16','POS Sale transaction #16',1,'2026-10-16 10:14:16'),(32,2,'SALE',-1,30,29,'SALE-17','POS Sale transaction #17',3,'2026-10-17 09:42:20'),(33,4,'SALE',-1,30,29,'SALE-17','POS Sale transaction #17',3,'2026-10-17 09:42:20'),(34,5,'SALE',-1,30,29,'SALE-17','POS Sale transaction #17',3,'2026-10-17 09:42:20'),(35,6,'SALE',-2,30,28,'SALE-18','POS Sale transaction #18',1,'2026-10-18 10:14:42'),(36,2,'SALE',-2,30,28,'SALE-19','POS Sale transaction #19',2,'2026-10-20 11:00:06'),(37,7,'SALE',-1,30,29,'SALE-19','POS Sale transaction #19',2,'2026-10-20 11:00:06'),(38,8,'SALE',-2,30,28,'SALE-19','POS Sale transaction #19',2,'2026-10-20 11:00:06'),(39,1,'SALE',-2,30,28,'SALE-20','POS Sale transaction #20',1,'2026-10-21 14:32:31'),(40,1,'SALE',-2,14,12,'SALE-21','POS Sale checkout for Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155) (SKU: YAM-ENG-001)',1,'2026-10-22 23:12:36'),(41,1,'SALE',-2,12,10,'SALE-22','POS Sale checkout for Yamaha Genuine Cylinder Block Kit (Aerox / NMAX 155) (SKU: YAM-ENG-001)',1,'2026-10-22 23:13:56');
-/*!40000 ALTER TABLE `movements` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2026-10-23  0:14:46
+SET FOREIGN_KEY_CHECKS = 1;
