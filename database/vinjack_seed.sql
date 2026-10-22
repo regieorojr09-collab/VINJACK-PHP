@@ -62,7 +62,7 @@ SELECT id, 'canViewReports' FROM `role_permissions` WHERE `role` = 'Admin';
 INSERT IGNORE INTO `users` (`full_name`, `username`, `email`, `password`, `role`, `status`) VALUES
 ('Super Admin', 'admin', 'admin@vinjack.com', '$2y$10$x.X/V5/3kQ8cWl0B5B1b/uR00R0bX0v0x0X/0x0/x00x0x0X0x0x0', 'Super Admin', 'active');
 -- A real password hash for 'password123':
-UPDATE `users` SET `password` = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE `username` = 'admin';
+UPDATE `users` SET `password` = '$2y$10$XA4NQ26WMahGiLUBbk/oW.5bpwBqmppMsVfmCe5kKgWLhqIuEe9JO' WHERE `username` = 'admin';
 
 
 -- 5. Seed Initial System Settings
