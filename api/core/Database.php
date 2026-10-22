@@ -178,6 +178,22 @@ class Database {
         try {
             $this->pdo = new PDO($dsn, $config['username'], $config['password'], $pdoOptions);
         } catch (PDOException $e) {
+            // Smart local fallback: if running locally on 3306 or 3307, attempt the alternative port
+            $isLocal = in_array(strtolower((string)$config['host']), ['localhost', '127.0.0.1', '::1']);
+            $currentPort = (int)$config['port'];
+            $altPort = ($currentPort === 3306) ? 3307 : (($currentPort === 3307) ? 3306 : null);
+
+            if ($isLocal && $altPort !== null) {
+                try {
+                    $altDsn = "mysql:host={$config['host']};port={$altPort};dbname={$config['dbname']};charset={$config['charset']}";
+                    $this->pdo = new PDO($altDsn, $config['username'], $config['password'], $pdoOptions);
+                    $this->config['port'] = $altPort;
+                    return;
+                } catch (PDOException $altEx) {
+                    // Alternative port also failed; continue to original exception handling
+                }
+            }
+
             $maskedUser = !empty($config['username']) ? substr($config['username'], 0, 3) . '***' : '(empty)';
             $logMsg = sprintf(
                 "Database connection failure to [%s:%s/%s] as user '%s': %s",
