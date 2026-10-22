@@ -253,21 +253,80 @@ body {
     justify-content: center;
     font-size: 0.95rem;
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Topbar Profile Dropdown */
+.profile-dropdown-wrapper {
+    position: relative;
+}
+
+.profile-avatar-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+    outline: none;
+}
+
+.profile-avatar-btn:hover,
+.profile-avatar-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.profile-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    color: var(--text);
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-align: left;
+    transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #fee2e2;
+    color: var(--danger);
 }
 
 .user-meta {
-    text-align: right;
+    text-align: left;
     color: #ffffff;
+    line-height: 1.2;
 }
 
 .user-meta .name {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #ffffff;
 }
 
 .user-meta .role {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.85);
 }
 
@@ -766,12 +825,65 @@ body {
 
 .product-card.out-of-stock,
 .pos-card.out-of-stock {
-    opacity: 0.6;
+    opacity: 0.55;
     border-color: #fecaca;
     background-color: #fffafb;
     cursor: not-allowed;
+    pointer-events: none; /* Disables all click events on out-of-stock cards */
     transform: none !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* POS Category Navigation Pills Container (Horizontal Scroll) */
+#pos-category-pills,
+.pos-category-pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.5rem;
+    padding-bottom: 0.35rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+#pos-category-pills::-webkit-scrollbar {
+    height: 4px;
+}
+
+#pos-category-pills::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pill-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background-color: #f0f7ff;
+}
+
+.pill-btn.active {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.25);
 }
 
 .product-card.service-card,
