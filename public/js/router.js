@@ -9,6 +9,7 @@ import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
 import { ReturnsPage } from './views/returns.js';
 import { ConsignmentPage } from './views/consignment.js';
+import { UsersPage } from './views/users.js';
 
 /**
  * Client-Side Hash Router
@@ -37,7 +38,9 @@ class Router {
             '/deliveries':      { view: MovementsPage,      title: 'Deliveries & Stock Movements' },
             '/customers':       { view: POSPage,            title: 'Customer Directory & Accounts' },
             '/transactions':    { view: POSPage,            title: 'Sales & Transactions' },
-            '/audit-log':       { view: MovementsPage,      title: 'Audit Log & Activity' }
+            '/audit-log':       { view: MovementsPage,      title: 'Audit Log & Activity' },
+            '/users':           { view: UsersPage,          title: 'User Management & Access Control' },
+            '/user-management': { view: UsersPage,          title: 'User Management & Access Control' }
         };
 
         this.appRoot = null;
