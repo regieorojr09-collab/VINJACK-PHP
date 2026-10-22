@@ -3,7 +3,7 @@
     <environment>production</environment>
     <connection>
         <host>localhost</host>
-        <port>3306</port>
+        <port>3307</port>
         <dbname>vinjack_db</dbname>
         <username>root</username>
         <password></password>
