@@ -74,6 +74,49 @@ body {
     flex-shrink: 0;
     z-index: 20;
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.02);
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+}
+
+/* Sidebar Collapsed State (70px Width, Hidden Labels, Centered Icons) */
+.sidebar.collapsed {
+    width: 70px;
+    min-width: 70px;
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 0 0.5rem;
+}
+
+.sidebar.collapsed .sidebar-header .flex {
+    display: none;
+}
+
+.sidebar.collapsed .brand-crest,
+.sidebar.collapsed .brand-name,
+.sidebar.collapsed .sidebar-section-title,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .sidebar-footer {
+    display: none !important;
+}
+
+.sidebar.collapsed .nav-link span:not(.nav-icon) {
+    display: none !important;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 0.65rem 0;
+    margin: 2px 0.5rem;
+    gap: 0;
+    text-align: center;
+}
+
+.sidebar.collapsed .nav-link .nav-icon {
+    font-size: 1.25rem;
+    width: auto;
+    margin: 0 auto;
 }
 
 .sidebar-header {
@@ -111,7 +154,7 @@ body {
     line-height: 1;
     padding: 0.25rem;
     border-radius: 4px;
-    transition: color 0.15s ease;
+    transition: color 0.15s ease, transform 0.2s ease;
 }
 .sidebar-collapse-btn:hover {
     color: var(--text);
@@ -164,14 +207,14 @@ body {
 }
 
 .nav-link.active {
-    color: #ffffff;
-    background-color: var(--primary-light);
+    color: #ffffff !important;
+    background-color: var(--primary) !important;
     font-weight: 600;
-    box-shadow: 0 2px 6px rgba(107, 164, 232, 0.35);
+    box-shadow: 0 2px 6px rgba(25, 118, 210, 0.35);
 }
 
 .nav-link.active .nav-icon {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .sidebar-footer {
@@ -179,12 +222,19 @@ body {
     border-top: 1px solid var(--border);
 }
 
-/* Topbar Header (Solid Royal Blue) */
+/* Topbar Header (Solid Royal Blue) & Main Content Wrapper */
 .main-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
+    margin-left: 0;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.sidebar.collapsed ~ .main-wrapper,
+.sidebar.collapsed + .main-wrapper {
+    margin-left: 0;
 }
 
 .topbar {
