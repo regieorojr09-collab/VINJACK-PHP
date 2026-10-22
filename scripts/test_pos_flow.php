@@ -46,7 +46,7 @@ echo "\n--- Phase 1: Pre-Test State Capture ---\n";
 $stmt = $pdo->prepare("
     SELECT id, item_code, name, quantity, price, default_cost 
     FROM products 
-    WHERE quantity > 5 AND is_active = 1 
+    WHERE quantity > 5 AND status = 'active' 
     ORDER BY id ASC 
     LIMIT 1
 ");
