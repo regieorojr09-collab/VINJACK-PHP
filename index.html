@@ -70,12 +70,6 @@
                     <i class="nav-icon">👤</i> <span>User Management</span>
                 </a>
             </nav>
-
-            <div class="sidebar-footer">
-                <button id="logout-btn" class="btn btn-secondary btn-block btn-sm flex items-center justify-center gap-2">
-                    <span>🚪</span> <span>Logout</span>
-                </button>
-            </div>
         </aside>
 
         <!-- Main Wrapper (Topbar + View Outlet) -->
@@ -86,12 +80,33 @@
                     <span class="topbar-title" id="current-page-title">Dashboard</span>
                 </div>
                 <div class="topbar-actions">
-                    <button class="topbar-icon-btn" title="Notifications" id="notif-btn">
-                        <span>🔔</span>
-                        <span class="notif-badge-dot"></span>
-                    </button>
-                    <div class="user-avatar-circle" title="User Profile">
-                        <span>👤</span>
+                    <!-- Profile Avatar & Role Dropdown Menu -->
+                    <div class="profile-dropdown-wrapper" id="profile-dropdown-wrapper">
+                        <button type="button" class="profile-avatar-btn" id="profile-dropdown-toggle" title="User Account Menu" aria-haspopup="true" aria-expanded="false">
+                            <div class="user-avatar-circle">
+                                <span>👤</span>
+                            </div>
+                            <div class="user-meta hidden md:block">
+                                <div class="name" id="user-display-name">Super Admin</div>
+                                <div class="role" id="user-display-role">Super Admin</div>
+                            </div>
+                            <span style="font-size: 0.7rem; opacity: 0.85;">▾</span>
+                        </button>
+
+                        <div class="profile-dropdown-menu hidden" id="profile-dropdown-menu">
+                            <div class="p-3 border-b">
+                                <div class="font-bold text-sm" id="dropdown-user-name">Super Admin</div>
+                                <div class="text-xs text-muted" id="dropdown-user-username">@admin</div>
+                                <div class="mt-1">
+                                    <span class="badge badge-primary text-xs" id="dropdown-user-role">Super Admin</span>
+                                </div>
+                            </div>
+                            <div class="p-1">
+                                <button type="button" class="dropdown-item flex items-center gap-2 w-full p-2 text-danger text-sm rounded cursor-pointer" id="dropdown-logout-btn">
+                                    <span>🚪</span> <span>Sign Out / Logout</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
