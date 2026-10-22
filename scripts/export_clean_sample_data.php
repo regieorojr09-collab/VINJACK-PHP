@@ -48,7 +48,7 @@ foreach ($tables as $table) {
                 $vals[] = $pdo->quote((string)$v);
             }
         }
-        $sql .= "INSERT INTO `{$table}` ({$colList}) VALUES (" . implode(', ', $vals) . ");\n";
+        $sql .= "INSERT IGNORE INTO `{$table}` ({$colList}) VALUES (" . implode(', ', $vals) . ");\n";
     }
     $sql .= "\n";
 }
