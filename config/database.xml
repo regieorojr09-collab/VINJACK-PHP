@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database_config>
     <environment>production</environment>
-    <!--
-      Database Connection Configuration for VinJack Motorworks
-      
-      CLOUD DEPLOYMENT NOTE (Render.com, TiDB Cloud, Aiven, etc.):
-      These XML values serve as fallbacks. In cloud environments like Render,
-      you can securely provide or override these values using Environment Variables:
-        - DB_HOST (or MYSQLHOST)
-        - DB_PORT (or MYSQLPORT)
-        - DB_NAME (or DB_DATABASE, MYSQLDATABASE)
-        - DB_USER (or DB_USERNAME, MYSQLUSER)
-        - DB_PASSWORD (or DB_PASS, MYSQLPASSWORD)
-        - DATABASE_URL (or MYSQL_URL)
-        - MYSQL_SSL_VERIFY (optional: true|false)
-    -->
     <connection>
         <host>localhost</host>
-        <port>3306</port>
-        <dbname>vinjack_db</dbname>
-        <username>root</username>
-        <password></password>
+<port>3306</port>
+<dbname>vinjack_schema</dbname>
+<username>root</username>
+<password></password>
         <charset>utf8mb4</charset>
     </connection>
     <options>
