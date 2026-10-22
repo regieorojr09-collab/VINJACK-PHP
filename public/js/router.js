@@ -73,11 +73,30 @@ class Router {
             this.renderAlertBanner(alertData);
         });
 
-        // Setup Logout button
-        document.getElementById('logout-btn')?.addEventListener('click', () => {
+        // Setup Profile Dropdown Toggle & Outside Click Closer
+        const profileToggle = document.getElementById('profile-dropdown-toggle');
+        const profileMenu = document.getElementById('profile-dropdown-menu');
+
+        profileToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu?.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileMenu?.contains(e.target) && !profileToggle?.contains(e.target)) {
+                profileMenu?.classList.add('hidden');
+            }
+        });
+
+        // Setup Logout handlers (Dropdown Logout & Fallback)
+        const handleLogout = () => {
+            profileMenu?.classList.add('hidden');
             State.clearUser();
             State.setAlert('You have been signed out.', 'info');
-        });
+        };
+
+        document.getElementById('dropdown-logout-btn')?.addEventListener('click', handleLogout);
+        document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
 
         // Initialize UI visibility based on current session
         this.updateLayoutAuthVisibility(State.isAuthenticated());
@@ -162,11 +181,19 @@ class Router {
 
             const userNameEl = document.getElementById('user-display-name');
             const userRoleEl = document.getElementById('user-display-role');
+            const dropdownNameEl = document.getElementById('dropdown-user-name');
+            const dropdownUsernameEl = document.getElementById('dropdown-user-username');
+            const dropdownRoleEl = document.getElementById('dropdown-user-role');
+
             if (userNameEl) userNameEl.textContent = user.full_name || user.username;
             if (userRoleEl) userRoleEl.textContent = user.role;
+            if (dropdownNameEl) dropdownNameEl.textContent = user.full_name || user.username;
+            if (dropdownUsernameEl) dropdownUsernameEl.textContent = '@' + (user.username || 'user');
+            if (dropdownRoleEl) dropdownRoleEl.textContent = user.role;
         } else {
             this.sidebarEl?.classList.add('hidden');
             this.topbarEl?.classList.add('hidden');
+            document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
         }
     }
 
