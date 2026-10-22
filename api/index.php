@@ -101,6 +101,7 @@ $resourceControllers = [
     'returns'          => ['file' => 'ReturnController.php',          'class' => 'ReturnController'],
     'consignment'      => ['file' => 'ConsignmentController.php',      'class' => 'ConsignmentController'],
     'reports'          => ['file' => 'ReportController.php',           'class' => 'ReportController'],
+    'services'         => ['file' => 'ServiceController.php',          'class' => 'ServiceController'],
 ];
 
 foreach ($resourceControllers as $resource => $info) {
