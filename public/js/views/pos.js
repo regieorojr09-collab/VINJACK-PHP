@@ -245,20 +245,42 @@ export const POSPage = {
             }
         });
 
-        // Add to Cart from Grid (Event delegation)
-        document.getElementById('pos-grid')?.addEventListener('click', (e) => {
-            const addProductBtn = e.target.closest('.add-product-cart-btn');
-            if (addProductBtn) {
-                const prodId = parseInt(addProductBtn.dataset.id, 10);
-                this.addProductToCart(prodId);
-                return;
-            }
+        // Add to Cart from Grid (Handles direct card click and event delegation)
+        let lastAddTimestamp = 0;
+        let lastAddId = null;
 
-            const addServiceBtn = e.target.closest('.add-service-cart-btn');
-            if (addServiceBtn) {
-                const svcId = parseInt(addServiceBtn.dataset.id, 10);
-                this.addServiceToCart(svcId);
-                return;
+        const handleAddProduct = (prodId) => {
+            const now = Date.now();
+            if (lastAddId === prodId && (now - lastAddTimestamp) < 150) return;
+            lastAddTimestamp = now;
+            lastAddId = prodId;
+            this.addProductToCart(prodId);
+        };
+
+        const handleAddService = (svcId) => {
+            const now = Date.now();
+            if (lastAddId === ('svc_' + svcId) && (now - lastAddTimestamp) < 150) return;
+            lastAddTimestamp = now;
+            lastAddId = 'svc_' + svcId;
+            this.addServiceToCart(svcId);
+        };
+
+        window.addToCart = handleAddProduct;
+        window.posAddToCart = handleAddProduct;
+        window.addServiceToCart = handleAddService;
+        window.posAddServiceToCart = handleAddService;
+
+        document.getElementById('pos-grid')?.addEventListener('click', (e) => {
+            const card = e.target.closest('.product-card, .pos-card');
+            if (!card) return;
+
+            const id = parseInt(card.dataset.id, 10);
+            if (!id) return;
+
+            if (card.classList.contains('service-card')) {
+                handleAddService(id);
+            } else {
+                handleAddProduct(id);
             }
         });
 
@@ -453,20 +475,21 @@ export const POSPage = {
                 const priceFmt = parseFloat(p.price).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
                 return `
-                    <div class="pos-card ${isOutOfStock ? 'out-of-stock' : ''}">
-                        <div class="pos-card-code">${p.item_code}</div>
-                        <div class="pos-card-title">${p.name}</div>
-                        <div class="pos-card-meta">
-                            <span class="badge ${isOutOfStock ? 'badge-danger' : 'badge-secondary'}">
-                                ${isOutOfStock ? 'Out of Stock' : `${p.quantity} ${p.unit || 'pc'} in stock`}
-                            </span>
+                    <div class="product-card pos-card ${isOutOfStock ? 'out-of-stock' : ''}" 
+                         data-id="${p.id}" 
+                         onclick="addToCart(${p.id})"
+                         title="${isOutOfStock ? 'Out of stock' : 'Click to add to cart'}">
+                        <div class="product-card-top pos-card-top">
+                            <span class="product-card-code pos-card-code">${p.item_code}</span>
+                            <h4 class="product-card-title pos-card-title">${p.name}</h4>
                         </div>
-                        <div class="pos-card-footer">
-                            <span class="pos-card-price">₱${priceFmt}</span>
-                            <button class="btn btn-sm ${isOutOfStock ? 'btn-secondary' : 'btn-primary'} add-product-cart-btn" 
-                                    data-id="${p.id}" ${isOutOfStock ? 'disabled' : ''}>
-                                + Add
-                            </button>
+                        <div class="product-card-bottom pos-card-footer">
+                            <div class="product-card-stock">
+                                <span class="badge ${isOutOfStock ? 'badge-danger' : 'badge-secondary'}">
+                                    ${isOutOfStock ? 'Out of Stock' : `${p.quantity} ${p.unit || 'pc'} in stock`}
+                                </span>
+                            </div>
+                            <span class="product-card-price pos-card-price">₱${priceFmt}</span>
                         </div>
                     </div>
                 `;
@@ -483,15 +506,18 @@ export const POSPage = {
             grid.innerHTML = filtered.map(s => {
                 const chargeFmt = parseFloat(s.charge).toLocaleString('en-PH', { minimumFractionDigits: 2 });
                 return `
-                    <div class="pos-card service-card">
-                        <div class="pos-card-code">LABOR</div>
-                        <div class="pos-card-title">${s.name}</div>
-                        <div class="pos-card-meta text-xs text-muted">${s.description || 'Shop service'}</div>
-                        <div class="pos-card-footer">
-                            <span class="pos-card-price text-success">₱${chargeFmt}</span>
-                            <button class="btn btn-sm btn-primary add-service-cart-btn" data-id="${s.id}">
-                                + Add Service
-                            </button>
+                    <div class="product-card pos-card service-card" 
+                         data-id="${s.id}" 
+                         onclick="addServiceToCart(${s.id})"
+                         title="Click to add labor service">
+                        <div class="product-card-top pos-card-top">
+                            <span class="product-card-code pos-card-code">LABOR SERVICE</span>
+                            <h4 class="product-card-title pos-card-title">${s.name}</h4>
+                            <div class="text-xs text-muted">${s.description || 'Shop service'}</div>
+                        </div>
+                        <div class="product-card-bottom pos-card-footer">
+                            <span class="badge badge-info">Service</span>
+                            <span class="product-card-price pos-card-price text-success">₱${chargeFmt}</span>
                         </div>
                     </div>
                 `;
@@ -503,9 +529,14 @@ export const POSPage = {
         const product = this.state.products.find(p => p.id === productId);
         if (!product) return;
 
+        const availableStock = parseInt(product.quantity, 10);
+        if (availableStock <= 0) {
+            State.setAlert(`"${product.name}" is currently out of stock.`, 'warning', 2500);
+            return;
+        }
+
         const existing = this.state.cart.items.find(i => i.product_id === productId);
         const currentQtyInCart = existing ? existing.quantity : 0;
-        const availableStock = parseInt(product.quantity, 10);
 
         if (currentQtyInCart >= availableStock) {
             State.setAlert(`Cannot add more. Only ${availableStock} ${product.name} in stock.`, 'warning', 3000);
