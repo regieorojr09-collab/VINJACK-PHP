@@ -41,8 +41,8 @@ export const POSPage = {
                             </div>
                         </div>
 
-                        <!-- Category Filter Pills (Visible on Products tab) -->
-                        <div id="pos-category-pills" class="flex gap-1 overflow-x-auto pb-1 ${this.state.activeTab === 'services' ? 'hidden' : ''}">
+                        <!-- Category Filter Pills (Horizontal Scroll) -->
+                        <div id="pos-category-pills" class="pos-category-pills flex flex-nowrap gap-1 overflow-x-auto whitespace-nowrap pb-1 ${this.state.activeTab === 'services' ? 'hidden' : ''}" style="overflow-x: auto; white-space: nowrap;">
                             <button class="pill-btn ${this.state.selectedCategoryId === '' ? 'active' : ''}" data-category-id="">All Categories</button>
                             <!-- Category pills rendered dynamically -->
                         </div>
@@ -250,6 +250,11 @@ export const POSPage = {
         let lastAddId = null;
 
         const handleAddProduct = (prodId) => {
+            const prod = this.state.products.find(p => p.id === prodId);
+            if (prod && parseInt(prod.quantity, 10) <= 0) {
+                State.setAlert(`"${prod.name}" is currently out of stock.`, 'warning', 2500);
+                return;
+            }
             const now = Date.now();
             if (lastAddId === prodId && (now - lastAddTimestamp) < 150) return;
             lastAddTimestamp = now;
@@ -477,7 +482,8 @@ export const POSPage = {
                 return `
                     <div class="product-card pos-card ${isOutOfStock ? 'out-of-stock' : ''}" 
                          data-id="${p.id}" 
-                         onclick="addToCart(${p.id})"
+                         onclick="${isOutOfStock ? 'return false;' : `addToCart(${p.id})`}"
+                         style="${isOutOfStock ? 'pointer-events: none; opacity: 0.55; cursor: not-allowed;' : ''}"
                          title="${isOutOfStock ? 'Out of stock' : 'Click to add to cart'}">
                         <div class="product-card-top pos-card-top">
                             <span class="product-card-code pos-card-code">${p.item_code}</span>
