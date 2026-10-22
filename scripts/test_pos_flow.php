@@ -188,12 +188,13 @@ if ((int)$saleItem['product_id'] === $productId &&
 $stmt = $pdo->prepare("
     SELECT id, product_id, type, quantity_change, stock_before, stock_after, reference_id, notes 
     FROM movements 
-    WHERE reference_id = :ref_id AND product_id = :prod_id AND type = 'SALE'
+    WHERE (reference_id = :ref_id OR reference_id = :ref_prefix) AND product_id = :prod_id AND type = 'SALE'
     ORDER BY id DESC LIMIT 1
 ");
 $stmt->execute([
-    ':ref_id'  => $saleId,
-    ':prod_id' => $productId
+    ':ref_id'     => (string)$saleId,
+    ':ref_prefix' => 'SALE-' . $saleId,
+    ':prod_id'    => $productId
 ]);
 $movement = $stmt->fetch();
 
