@@ -5,6 +5,7 @@
 *~
 *.swp
 *.bak
+*.zip
 
 # Scratch scripts & temporary data
 scratch/
