@@ -26,14 +26,14 @@ export const DashboardPage = {
         const currentTrendLabel = rangeLabels[this.state.range] || 'All Time';
 
         return `
-            <div class="view-container">
+            <div class="view-container p-4">
                 <!-- Page Header with Date Filter -->
-                <div class="page-header flex justify-between items-center mb-4">
+                <div class="page-header flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4 mb-4">
                     <div>
                         <h1 class="page-title text-2xl font-bold" style="color: #111827; margin-bottom: 2px;">Dashboard</h1>
                         <p class="text-muted text-sm" style="color: #6b7280;">Overview of your business performance</p>
                     </div>
-                    <div class="date-range-pills">
+                    <div class="date-range-pills flex flex-wrap w-full md:w-auto">
                         <button class="pill-btn ${this.state.range === 'today' ? 'active' : ''}" data-range="today">Today</button>
                         <button class="pill-btn ${this.state.range === 'week' ? 'active' : ''}" data-range="week">Week</button>
                         <button class="pill-btn ${this.state.range === 'month' ? 'active' : ''}" data-range="month">Month</button>
