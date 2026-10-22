@@ -14,7 +14,7 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation (Hidden on Login) -->
-        <aside id="app-sidebar" class="sidebar hidden">
+        <aside id="sidebar" class="sidebar hidden">
             <div class="sidebar-header">
                 <div class="flex items-center gap-2">
                     <div class="brand-crest">
@@ -22,52 +22,49 @@
                     </div>
                     <span class="brand-name">VinJack MS</span>
                 </div>
-                <button id="sidebar-toggle-btn" class="sidebar-collapse-btn" title="Toggle Sidebar">&lsaquo;</button>
+                <button id="sidebar-toggle" class="sidebar-collapse-btn" title="Toggle Sidebar">&lsaquo;</button>
             </div>
 
             <nav class="sidebar-nav overflow-x-auto whitespace-nowrap scrollbar-none">
                 <!-- Top Dashboard Link -->
                 <a href="#/dashboard" class="nav-link" id="nav-dashboard">
-                    <i class="nav-icon">📊</i> <span>Dashboard</span>
+                    <i class="nav-icon">📊</i> <span class="nav-text">Dashboard</span>
                 </a>
 
                 <!-- SALES SECTION -->
                 <div class="sidebar-section-title">SALES</div>
                 <a href="#/pos" class="nav-link" id="nav-pos">
-                    <i class="nav-icon">🛒</i> <span>Sales (POS)</span>
+                    <i class="nav-icon">🛒</i> <span class="nav-text">Sales (POS)</span>
                 </a>
                 <a href="#/customers" class="nav-link" id="nav-customers">
-                    <i class="nav-icon">👥</i> <span>Customers</span>
+                    <i class="nav-icon">👥</i> <span class="nav-text">Customers</span>
                 </a>
 
                 <!-- INVENTORY & SUPPLY SECTION -->
                 <div class="sidebar-section-title">INVENTORY & SUPPLY</div>
                 <a href="#/products" class="nav-link" id="nav-products">
-                    <i class="nav-icon">📦</i> <span>Inventory</span>
+                    <i class="nav-icon">📦</i> <span class="nav-text">Inventory</span>
                 </a>
                 <a href="#/purchase-orders" class="nav-link" id="nav-purchase-orders">
-                    <i class="nav-icon">📋</i> <span>Purchase Orders</span>
+                    <i class="nav-icon">📋</i> <span class="nav-text">Purchase Orders</span>
                 </a>
                 <a href="#/suppliers" class="nav-link" id="nav-suppliers">
-                    <i class="nav-icon">🏢</i> <span>Suppliers</span>
-                </a>
-                <a href="#/consignment" class="nav-link" id="nav-consignment">
-                    <i class="nav-icon">🤝</i> <span>Consignment Payouts</span>
+                    <i class="nav-icon">🏢</i> <span class="nav-text">Suppliers</span>
                 </a>
 
                 <!-- REPORTS SECTION -->
                 <div class="sidebar-section-title">REPORTS</div>
                 <a href="#/reports" class="nav-link" id="nav-reports">
-                    <i class="nav-icon">📊</i> <span>Reports</span>
+                    <i class="nav-icon">📊</i> <span class="nav-text">Reports</span>
                 </a>
                 <a href="#/audit-log" class="nav-link" id="nav-audit-log">
-                    <i class="nav-icon">📑</i> <span>Audit Log</span>
+                    <i class="nav-icon">📑</i> <span class="nav-text">Audit Log</span>
                 </a>
 
                 <!-- ADMIN SECTION -->
                 <div class="sidebar-section-title">ADMIN</div>
                 <a href="#/users" class="nav-link" id="nav-user-mgmt">
-                    <i class="nav-icon">👤</i> <span>User Management</span>
+                    <i class="nav-icon">👤</i> <span class="nav-text">User Management</span>
                 </a>
             </nav>
         </aside>
