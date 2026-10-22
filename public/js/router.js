@@ -7,9 +7,10 @@ import { SuppliersPage } from './views/suppliers.js';
 import { POSPage } from './views/pos.js';
 import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
-import { ReturnsPage } from './views/returns.js';
 import { ConsignmentPage } from './views/consignment.js';
 import { UsersPage } from './views/users.js';
+import { CustomersPage } from './views/customers.js';
+import { AuditLogsPage } from './views/audit_logs.js';
 
 /**
  * Client-Side Hash Router
@@ -30,15 +31,14 @@ class Router {
             '/inventory':       { view: ProductsPage,       title: 'Inventory & Products' },
             '/movements':       { view: MovementsPage,      title: 'Stock Movement Ledger' },
             '/ledger':          { view: MovementsPage,      title: 'Stock Movement Ledger' },
-            '/returns':         { view: ReturnsPage,        title: 'Returns & Warranty Claims' },
             '/consignment':     { view: ConsignmentPage,    title: 'Consignment Payables & Settlements' },
             '/suppliers':       { view: SuppliersPage,      title: 'Suppliers Directory' },
             '/purchase-orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
             '/purchase_orders': { view: PurchaseOrdersPage, title: 'Purchase Orders & Procurement' },
-            '/deliveries':      { view: MovementsPage,      title: 'Deliveries & Stock Movements' },
-            '/customers':       { view: POSPage,            title: 'Customer Directory & Accounts' },
-            '/transactions':    { view: POSPage,            title: 'Sales & Transactions' },
-            '/audit-log':       { view: MovementsPage,      title: 'Audit Log & Activity' },
+            '/customers':       { view: CustomersPage,       title: 'Customer Directory & Vehicles' },
+            '/audit-log':       { view: AuditLogsPage,      title: 'System Audit Trail' },
+            '/audit-logs':      { view: AuditLogsPage,      title: 'System Audit Trail' },
+            '/audit_logs':      { view: AuditLogsPage,      title: 'System Audit Trail' },
             '/users':           { view: UsersPage,          title: 'User Management & Access Control' },
             '/user-management': { view: UsersPage,          title: 'User Management & Access Control' }
         };
