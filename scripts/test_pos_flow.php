@@ -210,7 +210,7 @@ if ($movement) {
     if ((int)$movement['quantity_change'] === -$purchaseQty &&
         (int)$movement['stock_before'] === $initialQty &&
         (int)$movement['stock_after'] === $expectedQty &&
-        (int)$movement['reference_id'] === $saleId) {
+        ((string)$movement['reference_id'] === (string)$saleId || (string)$movement['reference_id'] === 'SALE-' . $saleId)) {
         echo "   [PASS] Immutable stock movement audit ledger correctly recorded.\n";
     } else {
         echo "   [FAIL] Movement ledger record parameters do not match transaction specifics!\n";

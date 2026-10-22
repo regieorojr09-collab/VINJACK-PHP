@@ -1,16 +1,16 @@
 {
-    "timestamp": "2026-10-22T17:12:36+02:00",
+    "timestamp": "2026-10-22T17:13:56+02:00",
     "product": {
         "id": 1,
         "item_code": "YAM-ENG-001",
         "name": "Yamaha Genuine Cylinder Block Kit (Aerox \/ NMAX 155)",
-        "initial_stock": 14,
-        "final_stock": 12,
+        "initial_stock": 12,
+        "final_stock": 10,
         "price": 3850,
         "default_cost": 2800
     },
     "transaction": {
-        "sale_id": 21,
+        "sale_id": 22,
         "purchased_qty": 2,
         "line_total": 7700,
         "mock_tendered": 8000,
@@ -19,8 +19,8 @@
     "acid_checks": {
         "inventory_deduction": {
             "status": "PASS",
-            "stock_before": 14,
-            "stock_after": 12,
+            "stock_before": 12,
+            "stock_after": 10,
             "delta": -2
         },
         "cogs_capture": {
@@ -29,12 +29,12 @@
             "captured_cogs": 2800
         },
         "movement_logging": {
-            "status": "FAIL",
-            "movement_id": null,
-            "type": null,
-            "quantity_change": 0,
-            "stock_before": 0,
-            "stock_after": 0,
+            "status": "PASS",
+            "movement_id": 41,
+            "type": "SALE",
+            "quantity_change": -2,
+            "stock_before": 12,
+            "stock_after": 10,
             "reference_id": 0
         }
     },
@@ -42,11 +42,11 @@
         "status": "PASS",
         "http_code": 200,
         "content_type": "application\/xml",
-        "receipt_id": "REC-000021",
+        "receipt_id": "REC-000022",
         "has_receipt": true,
         "has_header": true,
         "has_items": true,
         "has_summary": true,
-        "raw_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<receipt id=\"REC-000021\" timestamp=\"2026-10-22 23:12:36\">\n  <header>\n    <company_name>VinJack Motorworks<\/company_name>\n    <company_address>Marikina City, Metro Manila, Philippines<\/company_address>\n    <contact_phone>+63 (02) 8945-1234<\/contact_phone>\n    <contact_email>contact@vinjack.com<\/contact_email>\n  <\/header>\n  <metadata>\n    <sale_id>21<\/sale_id>\n    <transaction_date>2026-10-22 23:12:36<\/transaction_date>\n    <cashier id=\"1\">\n      <name>Super Admin<\/name>\n      <username>admin<\/username>\n    <\/cashier>\n    <customer id=\"0\">\n      <name>Walk-in Customer<\/name>\n    <\/customer>\n  <\/metadata>\n  <items count=\"1\">\n    <item product_id=\"1\">\n      <item_code>YAM-ENG-001<\/item_code>\n      <name>Yamaha Genuine Cylinder Block Kit (Aerox \/ NMAX 155)<\/name>\n      <unit>set<\/unit>\n      <quantity>2<\/quantity>\n      <unit_price>3850.00<\/unit_price>\n      <total_price>7700.00<\/total_price>\n    <\/item>\n  <\/items>\n  <services count=\"0\"\/>\n  <summary>\n    <items_subtotal>7700.00<\/items_subtotal>\n    <services_subtotal>0.00<\/services_subtotal>\n    <tax_rate_percent>0.00<\/tax_rate_percent>\n    <tax_amount>0.00<\/tax_amount>\n    <grand_total>7700.00<\/grand_total>\n    <currency>PHP<\/currency>\n  <\/summary>\n<\/receipt>\n"
+        "raw_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<receipt id=\"REC-000022\" timestamp=\"2026-10-22 23:13:56\">\n  <header>\n    <company_name>VinJack Motorworks<\/company_name>\n    <company_address>Marikina City, Metro Manila, Philippines<\/company_address>\n    <contact_phone>+63 (02) 8945-1234<\/contact_phone>\n    <contact_email>contact@vinjack.com<\/contact_email>\n  <\/header>\n  <metadata>\n    <sale_id>22<\/sale_id>\n    <transaction_date>2026-10-22 23:13:56<\/transaction_date>\n    <cashier id=\"1\">\n      <name>Super Admin<\/name>\n      <username>admin<\/username>\n    <\/cashier>\n    <customer id=\"0\">\n      <name>Walk-in Customer<\/name>\n    <\/customer>\n  <\/metadata>\n  <items count=\"1\">\n    <item product_id=\"1\">\n      <item_code>YAM-ENG-001<\/item_code>\n      <name>Yamaha Genuine Cylinder Block Kit (Aerox \/ NMAX 155)<\/name>\n      <unit>set<\/unit>\n      <quantity>2<\/quantity>\n      <unit_price>3850.00<\/unit_price>\n      <total_price>7700.00<\/total_price>\n    <\/item>\n  <\/items>\n  <services count=\"0\"\/>\n  <summary>\n    <items_subtotal>7700.00<\/items_subtotal>\n    <services_subtotal>0.00<\/services_subtotal>\n    <tax_rate_percent>0.00<\/tax_rate_percent>\n    <tax_amount>0.00<\/tax_amount>\n    <grand_total>7700.00<\/grand_total>\n    <currency>PHP<\/currency>\n  <\/summary>\n<\/receipt>\n"
     }
 }
