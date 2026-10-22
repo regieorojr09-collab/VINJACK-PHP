@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database_config>
+    <environment>production</environment>
+    <!--
+      Traditional cPanel / InfinityFree Live Database Credentials
+      Update with your cPanel / MySQL details:
+        - host: e.g. sqlXXX.infinityfree.com or localhost
+        - port: default 3306 for standard cPanel / InfinityFree MySQL
+        - dbname: e.g. epiz_XXXX_vinjack_db or cpaneluser_vinjack_db
+        - username: e.g. epiz_XXXX or cpaneluser_dbuser
+        - password: your live database user password
+    -->
+    <connection>
+        <host>localhost</host>
+        <port>3306</port>
+        <dbname>vinjack_db</dbname>
+        <username>root</username>
+        <password></password>
+        <charset>utf8mb4</charset>
+    </connection>
+    <options>
+        <persistent>false</persistent>
+        <timeout>5</timeout>
+        <error_mode>EXCEPTION</error_mode>
+        <fetch_mode>ASSOC</fetch_mode>
+        <ssl_verify>false</ssl_verify>
+    </options>
+</database_config>
