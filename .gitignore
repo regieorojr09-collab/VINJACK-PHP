@@ -12,6 +12,7 @@ vinjack-release.zip
 .env
 .env.*
 !.env.example
+!.env.production
 xampp/
 xampp-control.ini
 config/*.local.xml
