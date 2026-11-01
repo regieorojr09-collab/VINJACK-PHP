@@ -172,9 +172,10 @@ class StateStore {
                 }
             };
 
+            const isAuthenticated = this.isAuthenticated();
             const isSuperAdmin = this.isSuperAdmin();
 
-            toggleSafe('#nav-customers', isSuperAdmin);
+            toggleSafe('#nav-customers', isAuthenticated);
             toggleSafe('#nav-reports', isSuperAdmin);
             toggleSafe('#nav-user-mgmt', isSuperAdmin);
             toggleSafe('#nav-audit-log', isSuperAdmin);
