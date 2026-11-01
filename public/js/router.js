@@ -134,6 +134,9 @@ class Router {
         const hash = window.location.hash || '#/dashboard';
         const path = hash.replace(/^#/, '');
 
+        // Enforce sidebar permission guards on every route evaluation & page refresh
+        this.applySidebarPermissions();
+
         // Auth Guard
         if (!State.isAuthenticated() && path !== '/login') {
             window.location.hash = '#/login';
@@ -235,11 +238,8 @@ class Router {
             if (dropdownUsernameEl) dropdownUsernameEl.textContent = '@' + (user.username || 'user');
             if (dropdownRoleEl) dropdownRoleEl.textContent = user.role;
 
-            // Hide standalone Reports nav link for clerks lacking canViewReports
-            const navReportsEl = document.getElementById('nav-reports');
-            if (navReportsEl) {
-                navReportsEl.classList.toggle('hidden', !State.hasPermission('canViewReports'));
-            }
+            // Enforce sidebar RBAC visibility on login & session restore
+            this.applySidebarPermissions();
         } else {
             this.sidebarEl?.classList.add('hidden');
             this.topbarEl?.classList.add('hidden');

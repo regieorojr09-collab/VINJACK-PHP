@@ -67,6 +67,7 @@ class StateStore {
             localStorage.setItem('vinjack_user', JSON.stringify(user));
         }
 
+        this.syncSidebarPermissions();
         this.publish('auth:changed', true);
     }
 
@@ -79,6 +80,7 @@ class StateStore {
         localStorage.removeItem('vinjack_jwt');
         localStorage.removeItem('vinjack_user');
 
+        this.syncSidebarPermissions();
         this.publish('auth:changed', false);
     }
 
