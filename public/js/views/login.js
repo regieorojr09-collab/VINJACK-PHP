@@ -52,7 +52,9 @@ export const LoginPage = {
                 if (response.success && response.token) {
                     State.setUser(response.user, response.token);
                     State.setAlert(`Welcome back, ${response.user.full_name || response.user.username}!`, 'success');
-                    window.location.hash = '#/products';
+                    window.location.hash = typeof State.getDefaultRoute === 'function'
+                        ? State.getDefaultRoute()
+                        : (response.user.role === 'Super Admin' ? '#/dashboard' : '#/pos');
                 } else {
                     throw new Error(response.message || 'Login failed.');
                 }

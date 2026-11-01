@@ -1,15 +1,15 @@
 import { State } from './state.js';
-import { LoginPage } from './views/login.js?v=20261101h';
-import { DashboardPage } from './views/dashboard.js?v=20261101h';
-import { ReportsPage } from './views/reports.js?v=20261101h';
-import { ProductsPage } from './views/products.js?v=20261101h';
-import { SuppliersPage } from './views/suppliers.js?v=20261101h';
-import { POSPage } from './views/pos.js?v=20261101i';
-import { PurchaseOrdersPage } from './views/purchase_orders.js?v=20261101h';
-import { MovementsPage } from './views/movements.js?v=20261101h';
-import { UsersPage } from './views/users.js?v=20261101h';
-import { CustomersPage } from './views/customers.js?v=20261101i';
-import { AuditLogsPage } from './views/audit_logs.js?v=20261101h';
+import { LoginPage } from './views/login.js?v=20261101j';
+import { DashboardPage } from './views/dashboard.js?v=20261101j';
+import { ReportsPage } from './views/reports.js?v=20261101j';
+import { ProductsPage } from './views/products.js?v=20261101j';
+import { SuppliersPage } from './views/suppliers.js?v=20261101j';
+import { POSPage } from './views/pos.js?v=20261101j';
+import { PurchaseOrdersPage } from './views/purchase_orders.js?v=20261101j';
+import { MovementsPage } from './views/movements.js?v=20261101j';
+import { UsersPage } from './views/users.js?v=20261101j';
+import { CustomersPage } from './views/customers.js?v=20261101j';
+import { AuditLogsPage } from './views/audit_logs.js?v=20261101j';
 
 /**
  * Client-Side Hash Router
@@ -41,20 +41,27 @@ class Router {
             '/user-management': { view: UsersPage,          title: 'User Management & Access Control' }
         };
 
-        this.superAdminOnlyRoutes = new Set([
-            '/reports',
-            '/analytics',
-            '/users',
-            '/user-management',
-            '/audit-log',
-            '/audit-logs',
-            '/audit_logs',
-            '/purchase-orders',
-            '/purchase_orders',
-            '/suppliers',
-            '/movements',
-            '/ledger'
-        ]);
+        // Strict role-separated navigation allowlists
+        this.roleAllowedRoutes = {
+            Salesperson: new Set([
+                '/pos',
+                '/sales',
+                '/products',
+                '/inventory',
+                '/customers'
+            ]),
+            Admin: new Set([
+                '/pos',
+                '/sales',
+                '/products',
+                '/inventory',
+                '/reports',
+                '/analytics',
+                '/purchase-orders',
+                '/purchase_orders',
+                '/suppliers'
+            ])
+        };
 
         this.appRoot = null;
         this.pageTitleEl = null;
@@ -64,7 +71,20 @@ class Router {
     }
 
     /**
-     * Self-contained check strictly for Super Admin role (safe even if an older state.js is cached).
+     * Resolve default landing hash route per role:
+     * - Super Admin -> #/dashboard
+     * - Admin (Mechanic) -> #/pos
+     * - Salesperson (Clerk) -> #/pos
+     */
+    getDefaultRoute() {
+        if (!State || typeof State.isAuthenticated !== 'function' || !State.isAuthenticated()) {
+            return '#/login';
+        }
+        return (State.user?.role || '') === 'Super Admin' ? '#/dashboard' : '#/pos';
+    }
+
+    /**
+     * Self-contained check strictly for Super Admin role.
      */
     hasSuperAdminPrivileges() {
         if (!State || typeof State.isAuthenticated !== 'function' || !State.isAuthenticated()) {
@@ -93,8 +113,10 @@ class Router {
             this.updateLayoutAuthVisibility(isAuthenticated);
             if (!isAuthenticated) {
                 window.location.hash = '#/login';
-            } else if (window.location.hash === '#/login' || window.location.hash === '') {
-                window.location.hash = '#/dashboard';
+            } else if (window.location.hash === '#/login' || window.location.hash === '' || window.location.hash === '#/') {
+                window.location.hash = this.getDefaultRoute();
+            } else {
+                this.handleRoute();
             }
         });
 
@@ -163,7 +185,8 @@ class Router {
     }
 
     handleRoute() {
-        const hash = window.location.hash || '#/dashboard';
+        const defaultHash = this.getDefaultRoute();
+        const hash = window.location.hash || defaultHash;
         const path = hash.replace(/^#/, '');
 
         // Enforce sidebar permission guards safely on every route evaluation
@@ -176,22 +199,36 @@ class Router {
         }
 
         if (State.isAuthenticated() && (path === '/login' || path === '/' || path === '')) {
-            window.location.hash = '#/dashboard';
+            if (window.location.hash !== defaultHash) {
+                window.location.hash = defaultHash;
+            } else {
+                const fallbackPath = defaultHash.replace(/^#/, '');
+                const fallbackRoute = this.routes[fallbackPath];
+                if (fallbackRoute) {
+                    this.renderView(fallbackRoute.view, fallbackRoute.title, fallbackPath);
+                }
+            }
             return;
         }
 
-        // Strict RBAC Guard: reserve Customers, Reports, Procurement, Suppliers, Audit Log, and User Mgmt for Super Admin only
+        // Strict Role-Separated RBAC Route Guard
         if (State.isAuthenticated()) {
-            const isSuperAdmin = this.hasSuperAdminPrivileges();
-
-            if (this.superAdminOnlyRoutes.has(path) && !isSuperAdmin) {
-                State.setAlert('403 Forbidden: Super Admin Access Only', 'danger');
-                if (window.location.hash !== '#/dashboard') {
-                    window.location.hash = '#/dashboard';
-                } else {
-                    this.renderView(DashboardPage, 'Executive Dashboard', '/dashboard');
+            const role = State.user?.role || '';
+            if (role !== 'Super Admin' && this.routes[path]) {
+                const allowedSet = this.roleAllowedRoutes[role];
+                if (!allowedSet || !allowedSet.has(path)) {
+                    State.setAlert('403 Forbidden: Access Denied', 'danger');
+                    if (window.location.hash !== defaultHash) {
+                        window.location.hash = defaultHash;
+                    } else {
+                        const fallbackPath = defaultHash.replace(/^#/, '');
+                        const fallbackRoute = this.routes[fallbackPath];
+                        if (fallbackRoute) {
+                            this.renderView(fallbackRoute.view, fallbackRoute.title, fallbackPath);
+                        }
+                    }
+                    return;
                 }
-                return;
             }
         }
 
@@ -261,11 +298,12 @@ class Router {
             this.pageTitleEl.textContent = '404 - Not Found';
         }
 
+        const homeHash = this.getDefaultRoute();
         this.appRoot.innerHTML = `
             <div class="card text-center py-5">
                 <h2 class="text-2xl font-bold mb-2">404 - Page Not Found</h2>
                 <p class="text-muted mb-4">The route <code>#${path}</code> does not exist.</p>
-                <a href="#/dashboard" class="btn btn-primary inline-block">Return to Dashboard</a>
+                <a href="${homeHash}" class="btn btn-primary inline-block">Return Home</a>
             </div>
         `;
     }
@@ -343,16 +381,22 @@ class Router {
                 return;
             }
 
-            const isAuthenticated = Boolean(State && typeof State.isAuthenticated === 'function' && State.isAuthenticated());
-            const isSuperAdmin = this.hasSuperAdminPrivileges();
+            const isAuth = Boolean(State && typeof State.isAuthenticated === 'function' && State.isAuthenticated());
+            const role = isAuth ? (State.user?.role || '') : '';
+            const isSuperAdmin = role === 'Super Admin';
+            const isAdmin = role === 'Admin';
+            const isSalesperson = role === 'Salesperson';
 
-            this.setElementVisibility('#nav-customers', isAuthenticated);
-            this.setElementVisibility('#nav-reports', isSuperAdmin);
-            this.setElementVisibility('#nav-user-mgmt', isSuperAdmin);
+            this.setElementVisibility('#nav-dashboard', isSuperAdmin);
+            this.setElementVisibility('#nav-pos', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
+            this.setElementVisibility('#nav-customers', isSuperAdmin || isSalesperson);
+            this.setElementVisibility('#nav-products', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
+            this.setElementVisibility('#nav-purchase-orders', isSuperAdmin || isAdmin);
+            this.setElementVisibility('#nav-suppliers', isSuperAdmin || isAdmin);
+            this.setElementVisibility('#nav-reports', isSuperAdmin || isAdmin);
             this.setElementVisibility('#nav-audit-log', isSuperAdmin);
-            this.setElementVisibility('#nav-purchase-orders', isSuperAdmin);
-            this.setElementVisibility('#nav-suppliers', isSuperAdmin);
-            this.setElementVisibility('#nav-section-reports', isSuperAdmin);
+            this.setElementVisibility('#nav-user-mgmt', isSuperAdmin);
+            this.setElementVisibility('#nav-section-reports', isSuperAdmin || isAdmin);
             this.setElementVisibility('#nav-section-admin', isSuperAdmin);
         } catch (err) {
             console.warn('[RBAC] Safe sidebar visibility check skipped:', err);
