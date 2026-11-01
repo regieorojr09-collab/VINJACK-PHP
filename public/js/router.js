@@ -4,11 +4,11 @@ import { DashboardPage } from './views/dashboard.js?v=20261101h';
 import { ReportsPage } from './views/reports.js?v=20261101h';
 import { ProductsPage } from './views/products.js?v=20261101h';
 import { SuppliersPage } from './views/suppliers.js?v=20261101h';
-import { POSPage } from './views/pos.js?v=20261101h';
+import { POSPage } from './views/pos.js?v=20261101i';
 import { PurchaseOrdersPage } from './views/purchase_orders.js?v=20261101h';
 import { MovementsPage } from './views/movements.js?v=20261101h';
 import { UsersPage } from './views/users.js?v=20261101h';
-import { CustomersPage } from './views/customers.js?v=20261101h';
+import { CustomersPage } from './views/customers.js?v=20261101i';
 import { AuditLogsPage } from './views/audit_logs.js?v=20261101h';
 
 /**
@@ -42,7 +42,6 @@ class Router {
         };
 
         this.superAdminOnlyRoutes = new Set([
-            '/customers',
             '/reports',
             '/analytics',
             '/users',
@@ -344,9 +343,10 @@ class Router {
                 return;
             }
 
+            const isAuthenticated = Boolean(State && typeof State.isAuthenticated === 'function' && State.isAuthenticated());
             const isSuperAdmin = this.hasSuperAdminPrivileges();
 
-            this.setElementVisibility('#nav-customers', isSuperAdmin);
+            this.setElementVisibility('#nav-customers', isAuthenticated);
             this.setElementVisibility('#nav-reports', isSuperAdmin);
             this.setElementVisibility('#nav-user-mgmt', isSuperAdmin);
             this.setElementVisibility('#nav-audit-log', isSuperAdmin);
