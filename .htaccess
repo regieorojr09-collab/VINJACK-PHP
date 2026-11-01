@@ -7,7 +7,9 @@ Options +FollowSymLinks
 # Enable Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /VINJACK-PHP/
+    # For InfinityFree root htdocs/ deployment, use RewriteBase / or leave commented.
+    # If running in a subdirectory on local XAMPP, you can enable: RewriteBase /VINJACK-PHP/
+    # RewriteBase /
 
     # Security: Restrict direct access to sensitive configuration and source files
     RewriteRule ^(config|database|docs)/.*$ - [F,L,NC]
