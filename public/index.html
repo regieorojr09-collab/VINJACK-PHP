@@ -120,8 +120,13 @@
 
     <!-- Application Bootstrap (ES6 Modules) -->
     <script type="module">
-        import { router } from './js/router.js?v=20261101c';
-        document.addEventListener('DOMContentLoaded', () => {
+        import { router } from './js/router.js?v=20261101d';
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => router.init());
+        } else {
+            router.init();
+        }
+        // Bootstrap initialized above
             router.init();
         });
     </script>

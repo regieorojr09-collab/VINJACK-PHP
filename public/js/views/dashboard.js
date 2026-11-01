@@ -213,11 +213,12 @@ export const DashboardPage = {
     },
 
     async init() {
-        const canViewReports = State.hasPermission('canViewReports');
-        const trendCardEl = document.getElementById('dash-trend-card');
-        if (trendCardEl && !canViewReports) {
-            trendCardEl.classList.add('hidden');
-            trendCardEl.style.display = 'none';
+        if (!State.hasPermission('canViewReports')) {
+            const trendCardEl = document.querySelector('#dash-trend-card');
+            if (trendCardEl) {
+                trendCardEl.classList?.add('hidden');
+                trendCardEl.style?.setProperty?.('display', 'none');
+            }
         }
 
         this.bindEvents();
