@@ -1,5 +1,5 @@
 import { State } from './state.js';
-import { LoginPage } from './views/login.js?v=20261101f';
+import { LoginPage } from './views/login.js?v=20261101g';
 import { DashboardPage } from './views/dashboard.js?v=20261101f';
 import { ReportsPage } from './views/reports.js?v=20261101f';
 import { ProductsPage } from './views/products.js?v=20261101f';

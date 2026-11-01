@@ -25,18 +25,6 @@ export const LoginPage = {
                         </div>
                         <button type="submit" id="login-btn" class="btn btn-primary btn-block mt-4">Sign In</button>
                     </form>
-
-                    <div class="demo-section mt-4 pt-3 border-top">
-                        <div class="demo-header text-muted text-center mb-2">⚡ Quick Demo Logins</div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button class="btn btn-secondary btn-sm demo-login-btn" data-role="Super Admin">
-                                👑 Super Admin
-                            </button>
-                            <button class="btn btn-secondary btn-sm demo-login-btn" data-role="Salesperson">
-                                💼 Salesperson
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         `;
@@ -50,12 +38,14 @@ export const LoginPage = {
         if (!form) return;
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            errorDiv.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Authenticating...';
+            if (errorDiv) errorDiv.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Authenticating...';
+            }
 
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('username')?.value.trim() || '';
+            const password = document.getElementById('password')?.value || '';
 
             try {
                 const response = await apiClient.post('auth/login', { username, password });
@@ -67,33 +57,16 @@ export const LoginPage = {
                     throw new Error(response.message || 'Login failed.');
                 }
             } catch (err) {
-                errorDiv.textContent = err.message || 'Invalid username or password.';
-                errorDiv.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Sign In';
-            }
-        });
-
-        // Quick demo login buttons
-        document.querySelectorAll('.demo-login-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                errorDiv.style.display = 'none';
-                const role = e.currentTarget.dataset.role;
-
-                try {
-                    const response = await apiClient.post('auth/demo-login', { role });
-                    if (response.success && response.token) {
-                        State.setUser(response.user, response.token);
-                        State.setAlert(`Logged in as demo ${role}.`, 'success');
-                        window.location.hash = '#/products';
-                    }
-                } catch (err) {
-                    errorDiv.textContent = err.message || 'Demo login failed.';
+                if (errorDiv) {
+                    errorDiv.textContent = err.message || 'Invalid username or password.';
                     errorDiv.style.display = 'block';
                 }
-            });
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                }
+            }
         });
     }
 };
