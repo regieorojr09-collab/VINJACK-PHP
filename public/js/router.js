@@ -1,15 +1,15 @@
 import { State } from './state.js';
-import { LoginPage } from './views/login.js';
-import { DashboardPage } from './views/dashboard.js?v=20261101d';
-import { ReportsPage } from './views/reports.js?v=20261101d';
+import { LoginPage } from './views/login.js?v=20261101e';
+import { DashboardPage } from './views/dashboard.js?v=20261101e';
+import { ReportsPage } from './views/reports.js?v=20261101e';
 import { ProductsPage } from './views/products.js';
 import { SuppliersPage } from './views/suppliers.js';
 import { POSPage } from './views/pos.js';
 import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
-import { UsersPage } from './views/users.js?v=20261101d';
+import { UsersPage } from './views/users.js?v=20261101e';
 import { CustomersPage } from './views/customers.js';
-import { AuditLogsPage } from './views/audit_logs.js?v=20261101d';
+import { AuditLogsPage } from './views/audit_logs.js?v=20261101e';
 
 /**
  * Client-Side Hash Router

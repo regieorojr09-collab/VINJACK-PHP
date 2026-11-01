@@ -47,6 +47,7 @@ export const LoginPage = {
         const errorDiv = document.getElementById('login-error');
         const submitBtn = document.getElementById('login-btn');
 
+        if (!form) return;
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorDiv.style.display = 'none';
