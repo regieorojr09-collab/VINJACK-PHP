@@ -50,9 +50,11 @@ class ReportController {
                 break;
 
             case 'sales':
-                // Full financial sales & profitability report requires canViewReports; Super Admin bypasses
-                RBACMiddleware::checkPermission($user, 'canViewReports');
-                $this->getSalesReport();
+            case 'revenue-trend':
+                // Permitted for canViewDashboard so all roles can render the Dashboard Revenue Trend chart;
+                // confidential COGS/profit/totals fields are redacted in getSalesReport() unless user holds canViewReports
+                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
+                $this->getSalesReport($user, $action === 'revenue-trend');
                 break;
 
             default:
@@ -136,7 +138,7 @@ class ReportController {
         }
     }
 
-    public function getSalesReport(): void {
+    public function getSalesReport(?array $user = null, bool $trendOnly = false): void {
         $startDate = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? Validator::sanitize($_GET['start_date']) : null;
         $endDate = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? Validator::sanitize($_GET['end_date']) : null;
         $categoryId = isset($_GET['category_id']) && is_numeric($_GET['category_id']) ? (int)$_GET['category_id'] : null;
@@ -144,6 +146,22 @@ class ReportController {
 
         try {
             $data = $this->reportDAO->getSalesReport($startDate, $endDate, $categoryId, $supplierId);
+
+            // Expose only chart-safe date & gross revenue totals when user lacks higher-tier canViewReports
+            if ($trendOnly || !$this->hasReportAccess($user)) {
+                $chartRecords = array_map(static fn(array $row): array => [
+                    'sale_date'     => (string)($row['sale_date'] ?? ''),
+                    'gross_revenue' => (float)($row['gross_revenue'] ?? 0.0),
+                ], $data['records'] ?? []);
+
+                Response::json([
+                    'success' => true,
+                    'data'    => [
+                        'records' => $chartRecords
+                    ]
+                ], 200);
+            }
+
             Response::json([
                 'success' => true,
                 'data'    => $data
