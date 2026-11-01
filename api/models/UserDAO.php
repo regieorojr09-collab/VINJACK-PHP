@@ -40,12 +40,13 @@ class UserDAO {
         $results = $stmt->fetchAll();
         $permissions = array_column($results, 'permission_key');
 
-        // Enforce strict module boundaries: non-Super-Admin roles are restricted to Dashboard, POS, and Inventory
+        // Enforce strict module boundaries: non-Super-Admin roles are restricted to Dashboard, POS, Customers, and Inventory
         if ($role === 'Salesperson') {
             $allowedSalespersonPerms = [
                 'canViewDashboard',
                 'canViewInventory',
-                'canManageSales'
+                'canManageSales',
+                'canManageCustomers'
             ];
             $permissions = array_values(array_intersect(
                 array_unique(array_merge($permissions, $allowedSalespersonPerms)),
@@ -56,7 +57,8 @@ class UserDAO {
                 'canViewDashboard',
                 'canViewInventory',
                 'canManageInventory',
-                'canManageSales'
+                'canManageSales',
+                'canManageCustomers'
             ];
             $permissions = array_values(array_intersect(
                 array_unique(array_merge($permissions, $allowedAdminPerms)),
