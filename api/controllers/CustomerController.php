@@ -25,6 +25,15 @@ class CustomerController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
+        // Strictly restrict all Customer endpoints (GET, POST, PUT, DELETE) to Super Admin only
+        if (($user['role'] ?? '') !== 'Super Admin') {
+            Response::json([
+                'success' => false,
+                'message' => '403 Forbidden: Super Admin Access Only.'
+            ], 403);
+            return;
+        }
+
         switch ($method) {
             case 'GET':
                 RBACMiddleware::checkPermission($user, 'canManageCustomers');

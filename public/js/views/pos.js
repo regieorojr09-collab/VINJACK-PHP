@@ -61,7 +61,7 @@ export const POSPage = {
                         <div class="border-bottom pb-3 mb-3">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-xs uppercase font-bold text-muted">Customer & Vehicle</label>
-                                <button id="change-customer-btn" class="text-xs text-primary font-semibold btn-link cursor-pointer">
+                                <button id="change-customer-btn" class="text-xs text-primary font-semibold btn-link cursor-pointer ${(State.user?.role || '') === 'Super Admin' ? '' : 'hidden'}" style="${(State.user?.role || '') === 'Super Admin' ? '' : 'display: none;'}">
                                     ${this.state.selectedCustomer ? 'Change' : '+ Select Customer'}
                                 </button>
                             </div>
@@ -445,6 +445,10 @@ export const POSPage = {
 
     async loadCustomers() {
         try {
+            if ((State.user?.role || '') !== 'Super Admin') {
+                this.state.customers = [];
+                return;
+            }
             const res = await apiClient.get('customers');
             if (res.success) {
                 this.state.customers = res.data;

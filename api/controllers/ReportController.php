@@ -24,40 +24,60 @@ class ReportController {
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
         $action = $uriParts[1] ?? 'dashboard';
+        $isSuperAdmin = ($user['role'] ?? '') === 'Super Admin';
 
         if ($method !== 'GET') {
+            if (!$isSuperAdmin) {
+                Response::json([
+                    'success' => false,
+                    'message' => '403 Forbidden: Super Admin Access Only.'
+                ], 403);
+                return;
+            }
             Response::json(['success' => false, 'message' => "Method {$method} not allowed"], 405);
+            return;
         }
 
         switch ($action) {
             case 'dashboard':
-                // Allows users with canViewDashboard OR canViewReports; Super Admin bypasses
+                // Baseline overview metrics for Dashboard (COGS/profit redacted unless Super Admin)
                 RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
                 $this->getDashboardOverview($user);
                 break;
 
             case 'top-selling':
-                // Dashboard widgets: allows users with canViewDashboard OR canViewReports; Super Admin bypasses
+                // Top 5 Selling Products & Services widgets for Dashboard (COGS/profit redacted unless Super Admin)
                 RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
                 $this->getTopSelling($user);
                 break;
 
             case 'inventory-valuation':
             case 'valuation':
-                // Financial inventory valuation report requires canViewReports; Super Admin bypasses
-                RBACMiddleware::checkPermission($user, 'canViewReports');
-                $this->getValuation();
-                break;
-
             case 'sales':
             case 'revenue-trend':
-                // Permitted for canViewDashboard so all roles can render the Dashboard Revenue Trend chart;
-                // confidential COGS/profit/totals fields are redacted in getSalesReport() unless user holds canViewReports
-                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
-                $this->getSalesReport($user, $action === 'revenue-trend');
+                // Standalone Reports & Revenue Trend chart strictly reserved for Super Admin only
+                if (!$isSuperAdmin) {
+                    Response::json([
+                        'success' => false,
+                        'message' => '403 Forbidden: Super Admin Access Only.'
+                    ], 403);
+                    return;
+                }
+                if ($action === 'inventory-valuation' || $action === 'valuation') {
+                    $this->getValuation();
+                } else {
+                    $this->getSalesReport($user, $action === 'revenue-trend');
+                }
                 break;
 
             default:
+                if (!$isSuperAdmin) {
+                    Response::json([
+                        'success' => false,
+                        'message' => '403 Forbidden: Super Admin Access Only.'
+                    ], 403);
+                    return;
+                }
                 Response::json(['success' => false, 'message' => 'Invalid report endpoint specified.'], 404);
                 break;
         }
@@ -65,12 +85,9 @@ class ReportController {
 
     private function hasReportAccess(?array $user): bool {
         if ($user === null) {
-            return true;
+            return false;
         }
-        if (($user['role'] ?? '') === 'Super Admin') {
-            return true;
-        }
-        return in_array('canViewReports', $user['permissions'] ?? [], true);
+        return ($user['role'] ?? '') === 'Super Admin';
     }
 
     public function getDashboardOverview(?array $user = null): void {

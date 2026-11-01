@@ -348,7 +348,7 @@ export const ProductsPage = {
     async loadSuppliers() {
         try {
             const role = State.user?.role || '';
-            if (role !== 'Super Admin' && role !== 'Admin') {
+            if (role !== 'Super Admin') {
                 this.state.suppliers = [];
                 return;
             }
