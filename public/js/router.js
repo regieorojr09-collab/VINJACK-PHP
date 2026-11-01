@@ -1,15 +1,15 @@
 import { State } from './state.js';
-import { LoginPage } from './views/login.js?v=20261101e';
-import { DashboardPage } from './views/dashboard.js?v=20261101e';
-import { ReportsPage } from './views/reports.js?v=20261101e';
-import { ProductsPage } from './views/products.js';
-import { SuppliersPage } from './views/suppliers.js';
+import { LoginPage } from './views/login.js?v=20261101f';
+import { DashboardPage } from './views/dashboard.js?v=20261101f';
+import { ReportsPage } from './views/reports.js?v=20261101f';
+import { ProductsPage } from './views/products.js?v=20261101f';
+import { SuppliersPage } from './views/suppliers.js?v=20261101f';
 import { POSPage } from './views/pos.js';
 import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
-import { UsersPage } from './views/users.js?v=20261101e';
+import { UsersPage } from './views/users.js?v=20261101f';
 import { CustomersPage } from './views/customers.js';
-import { AuditLogsPage } from './views/audit_logs.js?v=20261101e';
+import { AuditLogsPage } from './views/audit_logs.js?v=20261101f';
 
 /**
  * Client-Side Hash Router
@@ -349,6 +349,7 @@ class Router {
 
             const isAdmin = this.hasAdminPrivileges();
             const canPurchaseOrders = isAdmin && State.hasPermission('canManagePurchaseOrders');
+            const canSuppliers = isAdmin;
             const canReports = isAdmin && State.hasPermission('canViewReports');
             const canAuditLog = isAdmin;
             const canUserMgmt = isAdmin;
@@ -356,6 +357,7 @@ class Router {
             this.setElementVisibility('#nav-user-mgmt', canUserMgmt);
             this.setElementVisibility('#nav-audit-log', canAuditLog);
             this.setElementVisibility('#nav-purchase-orders', canPurchaseOrders);
+            this.setElementVisibility('#nav-suppliers', canSuppliers);
             this.setElementVisibility('#nav-reports', canReports);
             this.setElementVisibility('#nav-section-reports', canReports || canAuditLog);
             this.setElementVisibility('#nav-section-admin', canUserMgmt);
