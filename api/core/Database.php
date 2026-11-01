@@ -106,7 +106,10 @@ class Database {
             libxml_clear_errors();
         }
 
-        // 2. High-Precedence Cloud Environment Overrides (Render, Railway, TiDB, Aiven)
+        // 2. Load .env or .env.production file if present
+        $this->loadDotEnv();
+
+        // 3. High-Precedence Cloud Environment Overrides (Render, Railway, TiDB, Aiven, or .env)
         // Check for full database connection URL (e.g. DATABASE_URL, MYSQL_URL)
         $databaseUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: ($_ENV['DATABASE_URL'] ?? null) ?: ($_SERVER['DATABASE_URL'] ?? null);
         if (!empty($databaseUrl)) {
