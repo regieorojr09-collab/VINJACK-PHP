@@ -223,7 +223,9 @@ class Database {
     private function resolveConfigPath(): ?string {
         $candidatePaths = [
             dirname(__DIR__, 2) . '/config/database.xml', // Root config/database.xml
-            dirname(__DIR__) . '/config/database.xml',    // api/config/database.xml
+            dirname(__DIR__) . '/config/database.xml',               // api/config/database.xml
+            dirname(__DIR__, 2) . '/config/database.production.xml', // Root config/database.production.xml fallback
+            dirname(__DIR__) . '/config/database.production.xml',    // api/config/database.production.xml fallback
         ];
 
         foreach ($candidatePaths as $path) {
@@ -238,6 +240,49 @@ class Database {
     /**
      * Get the singleton instance.
      */
+    /**
+     * Loads .env or .env.production file if present into environment variables.
+     */
+    private function loadDotEnv(): void {
+        $candidateEnvPaths = [
+            dirname(__DIR__, 2) . '/.env',
+            dirname(__DIR__, 2) . '/.env.production',
+            dirname(__DIR__) . '/.env',
+            dirname(__DIR__) . '/.env.production',
+        ];
+
+        foreach ($candidateEnvPaths as $envPath) {
+            if (file_exists($envPath) && is_readable($envPath)) {
+                $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                if ($lines !== false) {
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if ($line === '' || str_starts_with($line, '#')) {
+                            continue;
+                        }
+                        if (str_contains($line, '=')) {
+                            [$key, $value] = explode('=', $line, 2);
+                            $key = trim($key);
+                            $value = trim($value);
+                            if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                                (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+                                $value = substr($value, 1, -1);
+                            }
+                            if (!array_key_exists($key, $_ENV)) {
+                                $_ENV[$key] = $value;
+                            }
+                            if (!array_key_exists($key, $_SERVER)) {
+                                $_SERVER[$key] = $value;
+                            }
+                            putenv("{$key}={$value}");
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
     public static function getInstance(): self {
         if (self::$instance === null) {
             self::$instance = new self();
