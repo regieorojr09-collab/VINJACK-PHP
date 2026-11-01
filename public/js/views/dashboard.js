@@ -265,13 +265,13 @@ export const DashboardPage = {
 
     async loadDashboardData() {
         const params = this.getDateRangeParams();
-        const showFinancials = this.canViewFinancials();
 
         try {
-            // Concurrent fetch of baseline overview and top-selling widgets (permitted via canViewDashboard)
-            const [overviewOutcome, topSellingOutcome] = await Promise.allSettled([
+            // Concurrent fetch of overview, top-selling, and revenue trend (all permitted via canViewDashboard)
+            const [overviewOutcome, topSellingOutcome, salesTrendOutcome] = await Promise.allSettled([
                 apiClient.get('reports/dashboard', params),
-                apiClient.get('reports/top-selling', { ...params, limit: 5 })
+                apiClient.get('reports/top-selling', { ...params, limit: 5 }),
+                apiClient.get('reports/sales', params)
             ]);
 
             if (overviewOutcome.status === 'fulfilled') {
@@ -295,23 +295,19 @@ export const DashboardPage = {
                 console.error('Failed to load top-selling metrics:', topSellingOutcome.reason);
             }
 
-            // Only fetch financial daily sales / COGS report if user holds canViewReports
-            if (showFinancials) {
-                try {
-                    const salesRes = await apiClient.get('reports/sales', params);
-                    if (salesRes && salesRes.success && salesRes.data) {
-                        this.renderRevenueTrendChart(salesRes.data.records || []);
-                    } else {
-                        this.renderRevenueTrendChart([]);
-                    }
-                } catch (salesErr) {
-                    console.warn('Skipping financial trend chart:', salesErr);
-                    this.renderRevenueTrendChart([]);
-                }
+            // Render Revenue Trend chart unconditionally across all roles, falling back cleanly if empty
+            if (salesTrendOutcome.status === 'fulfilled') {
+                const salesRes = salesTrendOutcome.value;
+                const records = Array.isArray(salesRes?.data?.records) ? salesRes.data.records : [];
+                this.renderRevenueTrendChart(records);
+            } else {
+                console.warn('Failed to load revenue trend data:', salesTrendOutcome.reason);
+                this.renderRevenueTrendChart([]);
             }
 
         } catch (err) {
             console.error('Failed to load dashboard data:', err);
+            this.renderRevenueTrendChart([]);
             State.setAlert('Failed to refresh dashboard performance metrics', 'danger');
         }
     },
@@ -416,8 +412,9 @@ export const DashboardPage = {
         const container = document.getElementById('dash-trend-container');
         if (!container) return;
 
-        // If no records or 0 gross revenue, display exact placeholder from screenshot
-        const hasData = records && records.length > 0 && records.some(r => (parseFloat(r.gross_revenue) || 0) > 0);
+        // Safely normalize dataset and fall back cleanly if empty or zero revenue
+        const safeRecords = Array.isArray(records) ? records : [];
+        const hasData = safeRecords.length > 0 && safeRecords.some(r => r && (parseFloat(r.gross_revenue) || 0) > 0);
 
         if (!hasData) {
             container.innerHTML = `
@@ -434,9 +431,12 @@ export const DashboardPage = {
         }
 
         // If data exists, draw a crisp pure SVG line & gradient area chart
-        const sorted = [...records].reverse(); // chronological
-        const dates = sorted.map(r => r.sale_date.substring(5)); // MM-DD
-        const values = sorted.map(r => parseFloat(r.gross_revenue) || 0);
+        const sorted = [...safeRecords].reverse(); // chronological
+        const dates = sorted.map(r => {
+            const rawDate = String(r?.sale_date || '');
+            return rawDate.length >= 5 ? rawDate.substring(5) : (rawDate || 'N/A'); // MM-DD
+        });
+        const values = sorted.map(r => parseFloat(r?.gross_revenue) || 0);
 
         const maxVal = Math.max(...values, 100);
         const width = 800;
@@ -444,15 +444,23 @@ export const DashboardPage = {
         const padding = { top: 20, right: 30, bottom: 40, left: 50 };
         const chartWidth = width - padding.left - padding.right;
         const chartHeight = height - padding.top - padding.bottom;
+        const baselineY = padding.top + chartHeight;
 
         const points = values.map((val, idx) => {
-            const x = padding.left + (idx / Math.max(values.length - 1, 1)) * chartWidth;
-            const y = padding.top + chartHeight - (val / maxVal) * chartHeight;
+            const x = values.length === 1
+                ? padding.left + chartWidth / 2
+                : padding.left + (idx / (values.length - 1)) * chartWidth;
+            const y = baselineY - (val / maxVal) * chartHeight;
             return { x, y, val, date: dates[idx] };
         });
 
-        const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-        const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${padding.top + chartHeight} L ${points[0].x.toFixed(1)} ${padding.top + chartHeight} Z`;
+        const linePath = points.length === 1
+            ? `M ${padding.left.toFixed(1)} ${points[0].y.toFixed(1)} L ${(width - padding.right).toFixed(1)} ${points[0].y.toFixed(1)}`
+            : points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+        const areaPath = points.length === 1
+            ? `M ${padding.left.toFixed(1)} ${points[0].y.toFixed(1)} L ${(width - padding.right).toFixed(1)} ${points[0].y.toFixed(1)} L ${(width - padding.right).toFixed(1)} ${baselineY} L ${padding.left.toFixed(1)} ${baselineY} Z`
+            : `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${baselineY} L ${points[0].x.toFixed(1)} ${baselineY} Z`;
 
         container.innerHTML = `
             <div style="width: 100%; overflow-x: auto;">
