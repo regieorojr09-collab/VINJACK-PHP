@@ -1,6 +1,6 @@
 import { State } from './state.js';
 import { LoginPage } from './views/login.js';
-import { DashboardPage } from './views/dashboard.js';
+import { DashboardPage } from './views/dashboard.js?v=20261101b';
 import { ReportsPage } from './views/reports.js';
 import { ProductsPage } from './views/products.js';
 import { SuppliersPage } from './views/suppliers.js';
