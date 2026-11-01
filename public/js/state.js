@@ -114,6 +114,13 @@ class StateStore {
     }
 
     /**
+     * Check whether the authenticated user is strictly a Super Admin.
+     */
+    isSuperAdmin() {
+        return !!(this.isAuthenticated() && this.user && this.user.role === 'Super Admin');
+    }
+
+    /**
      * Check whether the authenticated user holds Admin or Super Admin privileges.
      */
     isAdminUser() {
@@ -165,20 +172,16 @@ class StateStore {
                 }
             };
 
-            const isAdmin = this.isAdminUser();
-            const canPurchaseOrders = isAdmin && this.hasPermission('canManagePurchaseOrders');
-            const canSuppliers = isAdmin;
-            const canReports = isAdmin && this.hasPermission('canViewReports');
-            const canAuditLog = isAdmin;
-            const canUserMgmt = isAdmin;
+            const isSuperAdmin = this.isSuperAdmin();
 
-            toggleSafe('#nav-user-mgmt', canUserMgmt);
-            toggleSafe('#nav-audit-log', canAuditLog);
-            toggleSafe('#nav-purchase-orders', canPurchaseOrders);
-            toggleSafe('#nav-suppliers', canSuppliers);
-            toggleSafe('#nav-reports', canReports);
-            toggleSafe('#nav-section-reports', canReports || canAuditLog);
-            toggleSafe('#nav-section-admin', canUserMgmt);
+            toggleSafe('#nav-customers', isSuperAdmin);
+            toggleSafe('#nav-reports', isSuperAdmin);
+            toggleSafe('#nav-user-mgmt', isSuperAdmin);
+            toggleSafe('#nav-audit-log', isSuperAdmin);
+            toggleSafe('#nav-purchase-orders', isSuperAdmin);
+            toggleSafe('#nav-suppliers', isSuperAdmin);
+            toggleSafe('#nav-section-reports', isSuperAdmin);
+            toggleSafe('#nav-section-admin', isSuperAdmin);
         } catch (err) {
             console.warn('[State] Safe sidebar sync skipped:', err);
         }
