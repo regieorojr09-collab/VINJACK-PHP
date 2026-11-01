@@ -15,7 +15,7 @@ import { AuditLogsPage } from './views/audit_logs.js';
  * Client-Side Hash Router
  * 
  * Auto-sync verified: Real-time watcher pipeline active.
- * Manages view transitions, authentication guards, and active navigation indicators.
+ * Manages view transitions, authentication guards, RBAC route guards, and active navigation indicators.
  */
 class Router {
     constructor() {
@@ -40,6 +40,16 @@ class Router {
             '/users':           { view: UsersPage,          title: 'User Management & Access Control' },
             '/user-management': { view: UsersPage,          title: 'User Management & Access Control' }
         };
+
+        this.adminOnlyRoutes = new Set([
+            '/users',
+            '/user-management',
+            '/audit-log',
+            '/audit-logs',
+            '/audit_logs',
+            '/purchase-orders',
+            '/purchase_orders'
+        ]);
 
         this.appRoot = null;
         this.pageTitleEl = null;
@@ -149,10 +159,26 @@ class Router {
             return;
         }
 
-        if (State.isAuthenticated() && (path === '/reports' || path === '/analytics') && !State.hasPermission('canViewReports')) {
-            State.setAlert('Access restricted: Missing canViewReports permission for the Reports module.', 'warning');
-            window.location.hash = '#/dashboard';
-            return;
+        // Strict RBAC Guard for User Management, Audit Log, Purchase Orders, and Reports
+        if (State.isAuthenticated()) {
+            const isAdmin = State.isAdminUser();
+            const isPurchaseOrderRoute = path === '/purchase-orders' || path === '/purchase_orders';
+            const isReportRoute = path === '/reports' || path === '/analytics';
+
+            const deniedAdminRoute = this.adminOnlyRoutes.has(path) && (
+                !isAdmin || (isPurchaseOrderRoute && !State.hasPermission('canManagePurchaseOrders'))
+            );
+            const deniedReportRoute = isReportRoute && (!isAdmin || !State.hasPermission('canViewReports'));
+
+            if (deniedAdminRoute || deniedReportRoute) {
+                State.setAlert('403 Forbidden: Access Denied', 'danger');
+                if (window.location.hash !== '#/dashboard') {
+                    window.location.hash = '#/dashboard';
+                } else {
+                    this.renderView(DashboardPage, 'Executive Dashboard', '/dashboard');
+                }
+                return;
+            }
         }
 
         const route = this.routes[path];
@@ -250,19 +276,11 @@ class Router {
     }
 
     /**
-     * Explicitly hide #nav-reports when State.hasPermission('canViewReports') returns false.
+     * Hide #nav-user-mgmt, #nav-audit-log, #nav-purchase-orders, and #nav-reports
+     * whenever the user lacks Admin / Super Admin privileges.
      */
     applySidebarPermissions() {
-        const navReportsEl = document.getElementById('nav-reports');
-        if (!navReportsEl) return;
-
-        if (!State.isAuthenticated() || !State.hasPermission('canViewReports')) {
-            navReportsEl.classList.add('hidden');
-            navReportsEl.style.display = 'none';
-        } else {
-            navReportsEl.classList.remove('hidden');
-            navReportsEl.style.display = '';
-        }
+        State.syncSidebarPermissions();
     }
 
     renderAlertBanner(alertData) {

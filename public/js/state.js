@@ -94,6 +94,15 @@ class StateStore {
         return this.user.role === requiredRole;
     }
 
+    /**
+     * Check whether the authenticated user holds Admin or Super Admin privileges
+     * (strictly false for Salesperson / Clerk accounts).
+     */
+    isAdminUser() {
+        if (!this.isAuthenticated() || !this.user) return false;
+        return this.user.role === 'Super Admin' || this.user.role === 'Admin';
+    }
+
     hasPermission(permissionKey) {
         if (!this.user) return false;
         if (this.user.role === 'Super Admin') return true;
@@ -102,21 +111,37 @@ class StateStore {
     }
 
     /**
-     * Conditionally hide or show permission-gated sidebar links (#nav-reports)
+     * Conditionally hide or show RBAC-restricted sidebar navigation modules
+     * (#nav-user-mgmt, #nav-audit-log, #nav-purchase-orders, #nav-reports)
      * whenever the user logs in, logs out, or refreshes the page.
      */
     syncSidebarPermissions() {
         if (typeof document === 'undefined') return;
-        const navReportsEl = document.getElementById('nav-reports');
-        if (!navReportsEl) return;
 
-        if (!this.isAuthenticated() || !this.hasPermission('canViewReports')) {
-            navReportsEl.classList.add('hidden');
-            navReportsEl.style.display = 'none';
-        } else {
-            navReportsEl.classList.remove('hidden');
-            navReportsEl.style.display = '';
-        }
+        const toggleEl = (id, visible) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (!visible) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            } else {
+                el.classList.remove('hidden');
+                el.style.display = '';
+            }
+        };
+
+        const isAdmin = this.isAdminUser();
+        const canPurchaseOrders = isAdmin && this.hasPermission('canManagePurchaseOrders');
+        const canReports = isAdmin && this.hasPermission('canViewReports');
+        const canAuditLog = isAdmin;
+        const canUserMgmt = isAdmin;
+
+        toggleEl('nav-purchase-orders', canPurchaseOrders);
+        toggleEl('nav-reports', canReports);
+        toggleEl('nav-audit-log', canAuditLog);
+        toggleEl('nav-user-mgmt', canUserMgmt);
+        toggleEl('nav-section-reports', canReports || canAuditLog);
+        toggleEl('nav-section-admin', canUserMgmt);
     }
 
     /**
