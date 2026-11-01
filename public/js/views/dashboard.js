@@ -306,11 +306,11 @@ export const DashboardPage = {
             }
 
             // Strictly fetch and render Revenue Trend chart only when user holds canViewReports
-            const trendCardEl = document.getElementById('dash-trend-card');
+            const trendCardEl = document.querySelector('#dash-trend-card');
             if (!canViewReports) {
                 if (trendCardEl) {
-                    trendCardEl.classList.add('hidden');
-                    trendCardEl.style.display = 'none';
+                    trendCardEl.classList?.add('hidden');
+                    trendCardEl.style?.setProperty?.('display', 'none');
                 }
                 return;
             }
