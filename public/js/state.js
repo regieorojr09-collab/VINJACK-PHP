@@ -102,6 +102,24 @@ class StateStore {
     }
 
     /**
+     * Conditionally hide or show permission-gated sidebar links (#nav-reports)
+     * whenever the user logs in, logs out, or refreshes the page.
+     */
+    syncSidebarPermissions() {
+        if (typeof document === 'undefined') return;
+        const navReportsEl = document.getElementById('nav-reports');
+        if (!navReportsEl) return;
+
+        if (!this.isAuthenticated() || !this.hasPermission('canViewReports')) {
+            navReportsEl.classList.add('hidden');
+            navReportsEl.style.display = 'none';
+        } else {
+            navReportsEl.classList.remove('hidden');
+            navReportsEl.style.display = '';
+        }
+    }
+
+    /**
      * Set a temporary flash alert banner across the UI.
      *
      * @param {string} message 

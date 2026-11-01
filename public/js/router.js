@@ -244,6 +244,24 @@ class Router {
             this.sidebarEl?.classList.add('hidden');
             this.topbarEl?.classList.add('hidden');
             document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
+            this.applySidebarPermissions();
+        }
+    }
+
+    /**
+     * Explicitly hide #nav-reports when State.hasPermission('canViewReports') returns false.
+     */
+    applySidebarPermissions() {
+        const navReportsEl = document.getElementById('nav-reports');
+        if (!navReportsEl) return;
+
+        if (!State.isAuthenticated() || !State.hasPermission('canViewReports')) {
+            navReportsEl.classList.add('hidden');
+            navReportsEl.style.display = 'none';
+        } else {
+            navReportsEl.classList.remove('hidden');
+            navReportsEl.style.display = '';
+        }
         }
     }
 
