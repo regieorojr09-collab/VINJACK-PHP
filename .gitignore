@@ -6,6 +6,16 @@
 *.swp
 *.bak
 *.zip
+vinjack-release.zip
+
+# Environment secrets & local XAMPP overrides
+.env
+.env.*
+!.env.example
+xampp/
+xampp-control.ini
+config/*.local.xml
+api/config/*.local.xml
 
 # Scratch scripts & temporary data
 scratch/
