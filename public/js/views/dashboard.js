@@ -6,7 +6,7 @@ import { State } from '../state.js';
  * 
  * Recreated pixel-perfect to match vinjacksystem.online/dashboard:
  * 1. Metric Cards (Revenue, Profit [restricted to canViewReports], Sales, Items Sold, Stock Units, SKUs)
- * 2. Revenue Trend Chart Area (restricted to canViewReports to prevent 403 errors for Salesperson)
+ * 2. Revenue Trend Chart Area (visible across all roles with canViewDashboard)
  * 3. Top 5 Selling Products and Top 5 Selling Services
  */
 export const DashboardPage = {
@@ -135,8 +135,7 @@ export const DashboardPage = {
                     </div>
                 </div>
 
-                ${showFinancials ? `
-                <!-- 2. Middle Row: Financial Revenue & COGS Trend Card (Restricted to canViewReports) -->
+                <!-- 2. Middle Row: Revenue Trend Card (Visible across all Dashboard roles) -->
                 <div class="card p-4 mb-4" id="dash-trend-card">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="trend-badge green-badge">
@@ -157,7 +156,6 @@ export const DashboardPage = {
                         </div>
                     </div>
                 </div>
-                ` : ''}
 
                 <!-- 3. Bottom Row: Top 5 Selling Products & Top 5 Selling Services -->
                 <div class="grid grid-cols-2 gap-4 mb-4">

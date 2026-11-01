@@ -201,7 +201,7 @@ class ReportDAO {
                 COALESCE(SUM(si.quantity * (si.price_at_time - si.cost_of_goods_sold)), 0.0) AS gross_profit
             FROM sale_items si
             JOIN sales s ON si.sale_id = s.id
-            JOIN products p ON si.product_id = p.id
+            LEFT JOIN products p ON si.product_id = p.id
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id
             WHERE {$whereClause}
@@ -372,8 +372,8 @@ class ReportDAO {
                 COALESCE(SUM(si.quantity * si.price_at_time), 0.0) AS items_revenue,
                 COALESCE(SUM(si.quantity * si.cost_of_goods_sold), 0.0) AS total_cogs
             FROM sales s
-            JOIN sale_items si ON s.id = si.sale_id
-            JOIN products p ON si.product_id = p.id
+            LEFT JOIN sale_items si ON s.id = si.sale_id
+            LEFT JOIN products p ON si.product_id = p.id
             WHERE {$whereClause}
             GROUP BY DATE(s.created_at)
             ORDER BY sale_date DESC
