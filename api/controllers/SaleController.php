@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/SaleDAO.php';
+require_once __DIR__ . '/../models/AuditLogDAO.php';
 require_once __DIR__ . '/../utils/Response.php';
 require_once __DIR__ . '/../utils/Validator.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -12,7 +13,7 @@ use Middleware\AuthMiddleware;
 /**
  * Sale Controller
  * 
- * Manages POS sales checkouts, registry listings, and structured XML receipt generation.
+ * Manages POS sales checkouts, registry listings, audit logging, and structured XML receipt generation.
  */
 class SaleController {
     private SaleDAO $saleDAO;
@@ -90,6 +91,19 @@ class SaleController {
         try {
             $saleId = $this->saleDAO->createSale($data, $items, $services, $userId);
             $createdSale = $this->saleDAO->getSaleById($saleId);
+
+            $totalFormatted = number_format((float)($createdSale['total_amount'] ?? 0), 2);
+            $customerName = !empty($createdSale['customer_name']) ? $createdSale['customer_name'] : 'Walk-in Customer';
+            $itemCount = is_array($createdSale) && isset($createdSale['items']) ? count($createdSale['items']) : count($items);
+            $serviceCount = is_array($createdSale) && isset($createdSale['services']) ? count($createdSale['services']) : count($services);
+
+            AuditLogDAO::createLog(
+                $userId,
+                'SALE_COMPLETED',
+                "Completed POS checkout Sale #{$saleId} for {$customerName} ({$itemCount} item line(s), {$serviceCount} service(s)) totaling ₱{$totalFormatted}.",
+                'Sale',
+                $saleId
+            );
 
             Response::json([
                 'success' => true,

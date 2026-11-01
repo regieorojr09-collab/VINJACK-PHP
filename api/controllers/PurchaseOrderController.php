@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/PurchaseOrderDAO.php';
+require_once __DIR__ . '/../models/AuditLogDAO.php';
 require_once __DIR__ . '/../utils/Response.php';
 require_once __DIR__ . '/../utils/Validator.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -12,7 +13,7 @@ use Middleware\AuthMiddleware;
 /**
  * Purchase Order Controller
  * 
- * Manages procurement orders, stock receipt verification, and XML export generation.
+ * Manages procurement orders, stock receipt verification, audit logging, and XML export generation.
  */
 class PurchaseOrderController {
     private PurchaseOrderDAO $poDAO;
@@ -51,7 +52,7 @@ class PurchaseOrderController {
             case 'PUT':
                 RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
                 if ($id !== null && $subresource === 'status') {
-                    $this->updateStatus($id, (string)($user['full_name'] ?? $user['username']));
+                    $this->updateStatus($id, (string)($user['full_name'] ?? $user['username']), (int)$user['id']);
                 } else {
                     Response::json(['success' => false, 'message' => 'Invalid action.'], 400);
                 }
@@ -110,6 +111,18 @@ class PurchaseOrderController {
             $poId = $this->poDAO->createPurchaseOrder($data, $userId);
             $createdPO = $this->poDAO->getPurchaseOrderById($poId);
 
+            $poNumber = $createdPO['po_number'] ?? "PO #{$poId}";
+            $supplierName = $createdPO['supplier_name'] ?? "Supplier #{$data['supplier_id']}";
+            $totalFormatted = number_format((float)($createdPO['total_amount'] ?? 0), 2);
+
+            AuditLogDAO::createLog(
+                $userId,
+                'PURCHASE_ORDER_CREATED',
+                "Created purchase order {$poNumber} for {$supplierName} totaling ₱{$totalFormatted}.",
+                'PurchaseOrder',
+                $poId
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'Purchase order created successfully.',
@@ -134,6 +147,25 @@ class PurchaseOrderController {
         try {
             $updatedPO = $this->poDAO->receiveOrderItems($poId, $data['items'], $userId);
 
+            $unitsReceived = 0;
+            foreach ($data['items'] as $item) {
+                $qty = (int)($item['quantity_received'] ?? 0);
+                if ($qty > 0) {
+                    $unitsReceived += $qty;
+                }
+            }
+            $poNumber = $updatedPO['po_number'] ?? "PO #{$poId}";
+            $supplierName = $updatedPO['supplier_name'] ?? 'Supplier';
+            $poStatus = $updatedPO['status'] ?? 'Received';
+
+            AuditLogDAO::createLog(
+                $userId,
+                'PO_RECEIVED',
+                "Received {$unitsReceived} unit(s) for {$poNumber} from {$supplierName} (Status: {$poStatus}).",
+                'PurchaseOrder',
+                $poId
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'Stock delivery successfully committed to inventory.',
@@ -146,7 +178,7 @@ class PurchaseOrderController {
         }
     }
 
-    public function updateStatus(int $poId, string $userName): void {
+    public function updateStatus(int $poId, string $userName, ?int $userId = null): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -160,6 +192,17 @@ class PurchaseOrderController {
         try {
             $this->poDAO->updateStatus($poId, $status, $notes, $userName);
             $po = $this->poDAO->getPurchaseOrderById($poId);
+
+            $poNumber = is_array($po) && !empty($po['po_number']) ? $po['po_number'] : "PO #{$poId}";
+            $auditAction = ($status === 'Approved') ? 'PURCHASE_ORDER_APPROVED' : 'PO_STATUS_UPDATED';
+
+            AuditLogDAO::createLog(
+                $userId,
+                $auditAction,
+                "Updated {$poNumber} status to '{$status}' ({$notes}).",
+                'PurchaseOrder',
+                $poId
+            );
 
             Response::json([
                 'success' => true,

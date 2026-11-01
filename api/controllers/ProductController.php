@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/ProductDAO.php';
+require_once __DIR__ . '/../models/AuditLogDAO.php';
 require_once __DIR__ . '/../utils/Response.php';
 require_once __DIR__ . '/../utils/Validator.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -13,7 +14,7 @@ use Middleware\AuthMiddleware;
  * Product Controller
  * 
  * Exposes REST endpoints for the product catalog, inventory monitoring,
- * and supplier cost matrices with strict RBAC enforcement.
+ * audit logging, and supplier cost matrices with strict RBAC enforcement.
  */
 class ProductController {
     private ProductDAO $productDAO;
@@ -24,6 +25,7 @@ class ProductController {
 
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
+        $actorId = (int)($user['id'] ?? 0);
 
         switch ($method) {
             case 'GET':
@@ -37,7 +39,7 @@ class ProductController {
 
             case 'POST':
                 RBACMiddleware::checkPermission($user, 'canManageInventory');
-                $this->createProduct();
+                $this->createProduct($actorId);
                 break;
 
             case 'PUT':
@@ -45,7 +47,7 @@ class ProductController {
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Product ID required for update.'], 400);
                 }
-                $this->updateProduct($id);
+                $this->updateProduct($id, $actorId);
                 break;
 
             case 'DELETE':
@@ -53,7 +55,7 @@ class ProductController {
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Product ID required for deletion.'], 400);
                 }
-                $this->deleteProduct($id);
+                $this->deleteProduct($id, $actorId);
                 break;
 
             default:
@@ -94,7 +96,7 @@ class ProductController {
         ], 200);
     }
 
-    public function createProduct(): void {
+    public function createProduct(?int $userId = null): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -145,6 +147,15 @@ class ProductController {
             $newId = $this->productDAO->createProduct($payload);
             $created = $this->productDAO->getProductById($newId);
 
+            $priceFormatted = number_format($payload['price'], 2);
+            AuditLogDAO::createLog(
+                $userId,
+                'PRODUCT_ADDED',
+                "Added new inventory product '{$payload['name']}' (SKU: {$payload['item_code']}) — Initial Stock: {$payload['quantity']} {$payload['unit']}, Price: ₱{$priceFormatted}.",
+                'Product',
+                $newId
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'Product catalog item created successfully.',
@@ -158,7 +169,7 @@ class ProductController {
         }
     }
 
-    public function updateProduct(int $id): void {
+    public function updateProduct(int $id, ?int $userId = null): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -214,6 +225,26 @@ class ProductController {
             $this->productDAO->updateProduct($id, $payload);
             $updated = $this->productDAO->getProductById($id);
 
+            $changes = [];
+            if ((float)$existing['price'] !== (float)$payload['price']) {
+                $changes[] = 'Price: ₱' . number_format((float)$existing['price'], 2) . ' -> ₱' . number_format((float)$payload['price'], 2);
+            }
+            if ((int)$existing['quantity'] !== (int)$payload['quantity']) {
+                $changes[] = "Stock: {$existing['quantity']} -> {$payload['quantity']}";
+            }
+            if (($existing['status'] ?? '') !== ($payload['status'] ?? '')) {
+                $changes[] = "Status: {$existing['status']} -> {$payload['status']}";
+            }
+            $changeSummary = !empty($changes) ? ' (' . implode(', ', $changes) . ')' : '';
+
+            AuditLogDAO::createLog(
+                $userId,
+                'PRODUCT_UPDATED',
+                "Updated inventory product '{$payload['name']}' (SKU: {$payload['item_code']}){$changeSummary}.",
+                'Product',
+                $id
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'Product updated successfully.',
@@ -227,7 +258,7 @@ class ProductController {
         }
     }
 
-    public function deleteProduct(int $id): void {
+    public function deleteProduct(int $id, ?int $userId = null): void {
         $existing = $this->productDAO->getProductById($id);
         if (!$existing) {
             Response::json(['success' => false, 'message' => 'Product not found.'], 404);
@@ -235,6 +266,15 @@ class ProductController {
 
         try {
             $this->productDAO->deleteProduct($id);
+
+            AuditLogDAO::createLog(
+                $userId,
+                'PRODUCT_DELETED',
+                "Deleted product '{$existing['name']}' (SKU: {$existing['item_code']}) from catalog.",
+                'Product',
+                $id
+            );
+
             Response::json([
                 'success' => true,
                 'message' => "Product '{$existing['name']}' deleted successfully."
