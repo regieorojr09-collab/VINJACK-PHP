@@ -18,6 +18,13 @@ export const ProductsPage = {
         loading: false
     },
 
+    canManageProducts() {
+        const role = State.user?.role || '';
+        if (role === 'Salesperson') return false;
+        if (role === 'Admin' || role === 'Super Admin') return true;
+        return State.hasPermission('canManageInventory');
+    },
+
     render() {
         const canManage = this.canManageProducts();
 
