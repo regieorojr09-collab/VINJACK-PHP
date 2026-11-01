@@ -5,7 +5,7 @@ import { State } from '../state.js';
  * System Audit Trail View
  * 
  * Displays an immutable, timestamped ledger of administrative actions,
- * user authentication events, procurement authorizations, and stock alterations.
+ * user authentication events, POS checkouts, procurement authorizations, and stock alterations.
  */
 export const AuditLogsPage = {
     state: {
@@ -25,7 +25,7 @@ export const AuditLogsPage = {
                 <div class="page-header flex justify-between items-center mb-4">
                     <div>
                         <h1 class="page-title text-2xl font-bold">System Audit Trail</h1>
-                        <p class="text-muted text-sm">Immutable chronicle of system logins, inventory movements, procurement approvals, and pricing changes.</p>
+                        <p class="text-muted text-sm">Immutable chronicle of system logins, POS sales, inventory movements, procurement receiving, and account updates.</p>
                     </div>
                     <div class="flex gap-2">
                         <button id="refresh-audit-btn" class="btn btn-secondary btn-sm">
@@ -41,15 +41,15 @@ export const AuditLogsPage = {
                         <div class="metric-value font-mono" id="metric-total-events">0</div>
                     </div>
                     <div class="metric-card border-blue">
-                        <span class="metric-label">Authentication Events</span>
+                        <span class="metric-label">Auth & Account Events</span>
                         <div class="metric-value font-mono text-primary" id="metric-auth-events">0</div>
                     </div>
                     <div class="metric-card border-purple">
-                        <span class="metric-label">Procurement & POs</span>
+                        <span class="metric-label">Sales & Procurement</span>
                         <div class="metric-value font-mono text-purple" id="metric-po-events">0</div>
                     </div>
                     <div class="metric-card border-success">
-                        <span class="metric-label">Inventory & Adjustments</span>
+                        <span class="metric-label">Inventory & Catalog</span>
                         <div class="metric-value font-mono text-success" id="metric-inv-events">0</div>
                     </div>
                 </div>
@@ -63,22 +63,29 @@ export const AuditLogsPage = {
                         <div>
                             <select id="filter-audit-action" class="form-control">
                                 <option value="">All Actions</option>
-                                <option value="USER_LOGIN">User Logins</option>
+                                <option value="USER_LOGIN">User Logins (USER_LOGIN)</option>
+                                <option value="SALE_COMPLETED">POS Sales (SALE_COMPLETED)</option>
+                                <option value="PRODUCT_ADDED">Product Added (PRODUCT_ADDED)</option>
+                                <option value="PRODUCT_UPDATED">Product Updated (PRODUCT_UPDATED)</option>
+                                <option value="PO_RECEIVED">PO Received (PO_RECEIVED)</option>
                                 <option value="PURCHASE_ORDER_CREATED">PO Created</option>
                                 <option value="PURCHASE_ORDER_APPROVED">PO Approved</option>
                                 <option value="STOCK_DELIVERY_RECEIVED">Stock Delivery</option>
                                 <option value="INVENTORY_ADJUSTMENT">Inventory Adjustment</option>
-                                <option value="PRICE_UPDATED">Price Updated</option>
+                                <option value="INVENTORY_MOVEMENT">Inventory Movement</option>
+                                <option value="USER_ROLE_UPDATED">User Role Updated</option>
+                                <option value="USER_STATUS_UPDATED">User Status Updated</option>
                             </select>
                         </div>
                         <div class="flex gap-2">
                             <select id="filter-audit-entity" class="form-control">
                                 <option value="">All Entity Types</option>
                                 <option value="Auth">Auth & Sessions</option>
-                                <option value="PurchaseOrder">Purchase Orders</option>
-                                <option value="Delivery">Deliveries</option>
-                                <option value="Inventory">Inventory Items</option>
+                                <option value="Sale">POS Sales</option>
                                 <option value="Product">Product Catalog</option>
+                                <option value="Inventory">Inventory Ledger</option>
+                                <option value="PurchaseOrder">Purchase Orders</option>
+                                <option value="User">User Accounts</option>
                             </select>
                             <button id="clear-audit-filters-btn" class="btn btn-secondary" title="Clear Filters">Clear</button>
                         </div>
@@ -164,7 +171,7 @@ export const AuditLogsPage = {
         }
 
         try {
-            const params = {};
+            const params = { limit: 250 };
             if (this.state.filters.search) params.search = this.state.filters.search;
             if (this.state.filters.action) params.action = this.state.filters.action;
             if (this.state.filters.entityType) params.entity_type = this.state.filters.entityType;
@@ -230,9 +237,18 @@ export const AuditLogsPage = {
 
     updateMetrics() {
         const total = this.state.logs.length;
-        const auth = this.state.logs.filter(l => l.action.includes('LOGIN') || l.entity_type === 'Auth').length;
-        const po = this.state.logs.filter(l => l.action.includes('PURCHASE') || l.entity_type === 'PurchaseOrder').length;
-        const inv = this.state.logs.filter(l => l.action.includes('INVENTORY') || l.action.includes('STOCK') || l.action.includes('DELIVERY') || l.action.includes('PRICE')).length;
+        const auth = this.state.logs.filter(l => {
+            const act = String(l.action || '');
+            return act.includes('LOGIN') || act.startsWith('USER_') || l.entity_type === 'Auth' || l.entity_type === 'User';
+        }).length;
+        const po = this.state.logs.filter(l => {
+            const act = String(l.action || '');
+            return act.includes('SALE') || act.includes('PURCHASE') || act.startsWith('PO_') || l.entity_type === 'PurchaseOrder' || l.entity_type === 'Sale';
+        }).length;
+        const inv = this.state.logs.filter(l => {
+            const act = String(l.action || '');
+            return act.includes('PRODUCT') || act.includes('INVENTORY') || act.includes('STOCK') || act.includes('DELIVERY') || act.includes('PRICE') || l.entity_type === 'Product' || l.entity_type === 'Inventory';
+        }).length;
 
         const totalEl = document.getElementById('metric-total-events');
         const authEl = document.getElementById('metric-auth-events');
@@ -252,13 +268,13 @@ export const AuditLogsPage = {
         if (a.includes('LOGIN') || a.includes('AUTH')) {
             return `<span class="badge badge-info font-mono text-xs">${a}</span>`;
         }
-        if (a.includes('APPROVED') || a.includes('DELIVERY') || a.includes('RECEIVED')) {
+        if (a.includes('COMPLETED') || a.includes('APPROVED') || a.includes('DELIVERY') || a.includes('RECEIVED')) {
             return `<span class="badge badge-success font-mono text-xs">${a}</span>`;
         }
         if (a.includes('CREATED') || a.includes('ADD')) {
             return `<span class="badge badge-primary font-mono text-xs">${a}</span>`;
         }
-        if (a.includes('ADJUST') || a.includes('UPDATE') || a.includes('PRICE')) {
+        if (a.includes('ADJUST') || a.includes('UPDATE') || a.includes('PRICE') || a.includes('MOVEMENT')) {
             return `<span class="badge badge-warning font-mono text-xs">${a}</span>`;
         }
         if (a.includes('DELETE') || a.includes('REJECT') || a.includes('LOCK')) {

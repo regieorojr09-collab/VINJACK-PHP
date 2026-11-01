@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/MovementDAO.php';
+require_once __DIR__ . '/../models/AuditLogDAO.php';
 require_once __DIR__ . '/../utils/Response.php';
 require_once __DIR__ . '/../utils/Validator.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -101,6 +102,20 @@ class MovementController {
 
         try {
             $adjustment = $this->movementDAO->createAdjustment($productId, $newQuantity, $notes, $userId);
+
+            $prodName = $adjustment['product_name'] ?? "Product #{$productId}";
+            $beforeQty = $adjustment['stock_before'] ?? '?';
+            $afterQty = $adjustment['stock_after'] ?? $newQuantity;
+            $noteSuffix = $notes !== '' ? " — Reason: {$notes}" : '';
+
+            AuditLogDAO::createLog(
+                $userId,
+                'INVENTORY_ADJUSTMENT',
+                "Manual stock adjustment for '{$prodName}': {$beforeQty} -> {$afterQty}{$noteSuffix}.",
+                'Inventory',
+                $productId
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'Inventory adjustment committed to ledger successfully.',

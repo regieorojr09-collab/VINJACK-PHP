@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/UserDAO.php';
+require_once __DIR__ . '/../models/AuditLogDAO.php';
 require_once __DIR__ . '/../utils/Response.php';
 require_once __DIR__ . '/../utils/Validator.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -12,7 +13,8 @@ use Middleware\AuthMiddleware;
 /**
  * User Management Controller
  * 
- * Manages user authentication introspection, listing, creation, updates, and status toggles.
+ * Manages user authentication introspection, listing, creation, updates,
+ * status toggles, and administrative audit logging.
  * Only Super Admin possesses permission to manage user accounts.
  */
 class UserController {
@@ -24,6 +26,7 @@ class UserController {
 
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
+        $actorId = (int)($user['id'] ?? 0);
 
         $action = isset($uriParts[1]) && !is_numeric($uriParts[1]) ? $uriParts[1] : '';
         $subresource = $uriParts[2] ?? null;
@@ -58,7 +61,7 @@ class UserController {
                 break;
 
             case 'POST':
-                $this->createUser();
+                $this->createUser($actorId);
                 break;
 
             case 'PUT':
@@ -66,9 +69,9 @@ class UserController {
                     Response::json(['success' => false, 'message' => 'User ID is required.'], 400);
                 }
                 if ($subresource === 'status') {
-                    $this->updateStatus($id);
+                    $this->updateStatus($id, $actorId);
                 } else {
-                    $this->updateUser($id);
+                    $this->updateUser($id, $actorId);
                 }
                 break;
 
@@ -76,7 +79,7 @@ class UserController {
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'User ID is required.'], 400);
                 }
-                $this->deleteUser($id, (int)$user['id']);
+                $this->deleteUser($id, $actorId);
                 break;
 
             default:
@@ -125,7 +128,7 @@ class UserController {
         ], 200);
     }
 
-    private function createUser(): void {
+    private function createUser(int $actorId): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -150,6 +153,14 @@ class UserController {
             $created = $this->userDAO->findById($userId);
             unset($created['password']);
 
+            AuditLogDAO::createLog(
+                $actorId,
+                'USER_CREATED',
+                "Created user account '@{$created['username']}' ({$created['full_name']}) with role '{$created['role']}' and status '{$created['status']}'.",
+                'User',
+                $userId
+            );
+
             Response::json([
                 'success' => true,
                 'message' => 'User created successfully.',
@@ -162,7 +173,7 @@ class UserController {
         }
     }
 
-    private function updateUser(int $id): void {
+    private function updateUser(int $id, int $actorId): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -183,9 +194,42 @@ class UserController {
         }
 
         try {
+            $before = $this->userDAO->findById($id);
+            if (!$before) {
+                Response::json(['success' => false, 'message' => "User ID {$id} not found."], 404);
+            }
+
             $this->userDAO->updateUser($id, $data);
+            if (($before['status'] ?? '') === 'locked' && ($data['status'] ?? '') === 'active') {
+                $this->userDAO->resetFailedAttempts($id);
+            }
+
             $updated = $this->userDAO->findById($id);
             unset($updated['password']);
+
+            $roleChanged = ($before['role'] ?? '') !== ($updated['role'] ?? '');
+            $statusChanged = ($before['status'] ?? '') !== ($updated['status'] ?? '');
+
+            if ($roleChanged) {
+                $actionCode = 'USER_ROLE_UPDATED';
+                $statusNote = $statusChanged ? " and status '{$before['status']}' -> '{$updated['status']}'" : '';
+                $details = "Updated role for '@{$updated['username']}' from '{$before['role']}' to '{$updated['role']}'{$statusNote}.";
+            } elseif ($statusChanged) {
+                $actionCode = 'USER_STATUS_UPDATED';
+                $details = "Changed account status for '@{$updated['username']}' from '{$before['status']}' to '{$updated['status']}'.";
+            } else {
+                $actionCode = 'USER_UPDATED';
+                $pwdNote = !empty($data['password']) ? ' (including password reset)' : '';
+                $details = "Updated account profile for '@{$updated['username']}' ({$updated['role']}){$pwdNote}.";
+            }
+
+            AuditLogDAO::createLog(
+                $actorId,
+                $actionCode,
+                $details,
+                'User',
+                $id
+            );
 
             Response::json([
                 'success' => true,
@@ -201,7 +245,7 @@ class UserController {
         }
     }
 
-    private function updateStatus(int $id): void {
+    private function updateStatus(int $id, int $actorId): void {
         $raw = file_get_contents("php://input");
         $data = json_decode($raw, true);
 
@@ -212,7 +256,25 @@ class UserController {
         $status = (string)$data['status'];
 
         try {
+            $before = $this->userDAO->findById($id);
+            if (!$before) {
+                Response::json(['success' => false, 'message' => 'User not found.'], 404);
+            }
+
             $this->userDAO->updateStatus($id, $status);
+            if ($status === 'active') {
+                $this->userDAO->resetFailedAttempts($id);
+            }
+
+            $oldStatus = $before['status'] ?? 'unknown';
+            AuditLogDAO::createLog(
+                $actorId,
+                'USER_STATUS_UPDATED',
+                "Changed account status for '@{$before['username']}' ({$before['role']}) from '{$oldStatus}' to '{$status}'.",
+                'User',
+                $id
+            );
+
             Response::json([
                 'success' => true,
                 'message' => "User status updated to '{$status}'."
@@ -226,7 +288,29 @@ class UserController {
 
     private function deleteUser(int $id, int $currentUserId): void {
         try {
+            $before = $this->userDAO->findById($id);
             $this->userDAO->deleteUser($id, $currentUserId);
+            $after = $this->userDAO->findById($id);
+
+            $targetUsername = $before['username'] ?? "user#{$id}";
+            if ($after) {
+                AuditLogDAO::createLog(
+                    $currentUserId,
+                    'USER_STATUS_UPDATED',
+                    "Deactivated user account '@{$targetUsername}' to preserve historical transaction records.",
+                    'User',
+                    $id
+                );
+            } else {
+                AuditLogDAO::createLog(
+                    $currentUserId,
+                    'USER_DELETED',
+                    "Deleted user account '@{$targetUsername}'.",
+                    'User',
+                    $id
+                );
+            }
+
             Response::json([
                 'success' => true,
                 'message' => 'User deleted or deactivated successfully.'
