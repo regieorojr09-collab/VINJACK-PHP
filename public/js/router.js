@@ -55,6 +55,7 @@ class Router {
         this.pageTitleEl = null;
         this.sidebarEl = null;
         this.topbarEl = null;
+        this.pendingViewInitTimer = null;
     }
 
     /**
@@ -244,8 +245,12 @@ class Router {
         // Re-verify sidebar permissions after view mount
         this.applySidebarPermissions();
 
-        // Lifecycle hook
-        setTimeout(() => {
+        // Lifecycle hook (cancel any superseded view init timer on rapid redirects)
+        if (this.pendingViewInitTimer) {
+            clearTimeout(this.pendingViewInitTimer);
+        }
+        this.pendingViewInitTimer = setTimeout(() => {
+            this.pendingViewInitTimer = null;
             if (typeof view.init === 'function') {
                 view.init();
             }
