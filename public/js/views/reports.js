@@ -23,12 +23,16 @@ export const ReportsPage = {
     },
 
     render() {
-        if (!State.hasPermission('canViewReports')) {
+        const isSuperAdmin = typeof State.isSuperAdmin === 'function'
+            ? State.isSuperAdmin()
+            : (State.user?.role === 'Super Admin');
+
+        if (!isSuperAdmin) {
             return `
                 <div class="view-container p-4">
                     <div class="card text-center py-8">
-                        <h2 class="text-xl font-bold mb-2">Access Restricted</h2>
-                        <p class="text-muted text-sm mb-4">You do not have permission (<code>canViewReports</code>) to view standalone financial reports.</p>
+                        <h2 class="text-xl font-bold mb-2">403 Forbidden: Super Admin Access Only</h2>
+                        <p class="text-muted text-sm mb-4">Standalone financial and profitability reports are strictly reserved for Super Admin accounts.</p>
                         <a href="#/dashboard" class="btn btn-primary inline-block">Return to Dashboard</a>
                     </div>
                 </div>

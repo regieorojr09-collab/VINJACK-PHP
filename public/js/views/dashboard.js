@@ -17,11 +17,20 @@ export const DashboardPage = {
     },
 
     /**
-     * Check whether the active user holds higher-level financial reporting privileges.
-     * Super Admin bypasses automatically via State.hasPermission().
+     * Strictly verify Super Admin role for executive financial & revenue trend widgets.
+     */
+    isSuperAdmin() {
+        if (typeof State.isSuperAdmin === 'function') {
+            return State.isSuperAdmin();
+        }
+        return !!(State.user && State.user.role === 'Super Admin');
+    },
+
+    /**
+     * Check whether the active user holds Super Admin financial reporting privileges.
      */
     canViewFinancials() {
-        return State.hasPermission('canViewReports');
+        return this.isSuperAdmin();
     },
 
     render() {
@@ -213,11 +222,15 @@ export const DashboardPage = {
     },
 
     async init() {
-        if (!State.hasPermission('canViewReports')) {
+        if (!this.isSuperAdmin()) {
             const trendCardEl = document.querySelector('#dash-trend-card');
             if (trendCardEl) {
                 trendCardEl.classList?.add('hidden');
                 trendCardEl.style?.setProperty?.('display', 'none');
+            }
+            const trendContainerEl = document.querySelector('#dash-trend-container');
+            if (trendContainerEl) {
+                trendContainerEl.style?.setProperty?.('display', 'none');
             }
         }
 
@@ -275,7 +288,7 @@ export const DashboardPage = {
 
     async loadDashboardData() {
         const params = this.getDateRangeParams();
-        const canViewReports = State.hasPermission('canViewReports');
+        const isSuperAdmin = this.isSuperAdmin();
 
         try {
             // Concurrent fetch of baseline overview and top-selling widgets (permitted for all Dashboard users)
@@ -305,12 +318,16 @@ export const DashboardPage = {
                 console.error('Failed to load top-selling metrics:', topSellingOutcome.reason);
             }
 
-            // Strictly fetch and render Revenue Trend chart only when user holds canViewReports
+            // Strictly fetch and render Revenue Trend chart only for Super Admin
             const trendCardEl = document.querySelector('#dash-trend-card');
-            if (!canViewReports) {
+            const trendContainerEl = document.querySelector('#dash-trend-container');
+            if (!isSuperAdmin) {
                 if (trendCardEl) {
                     trendCardEl.classList?.add('hidden');
                     trendCardEl.style?.setProperty?.('display', 'none');
+                }
+                if (trendContainerEl) {
+                    trendContainerEl.style?.setProperty?.('display', 'none');
                 }
                 return;
             }
@@ -326,7 +343,7 @@ export const DashboardPage = {
 
         } catch (err) {
             console.error('Failed to load dashboard data:', err);
-            if (canViewReports) {
+            if (isSuperAdmin) {
                 this.renderRevenueTrendChart([]);
             }
             State.setAlert('Failed to refresh dashboard performance metrics', 'danger');
