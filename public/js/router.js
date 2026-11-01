@@ -123,8 +123,9 @@ class Router {
             }
         } catch (e) {}
 
-        // Initialize UI visibility based on current session
+        // Initialize UI visibility and sidebar permissions based on current session
         this.updateLayoutAuthVisibility(State.isAuthenticated());
+        this.applySidebarPermissions();
 
         // Initial Route Dispatch
         this.handleRoute();
@@ -261,7 +262,6 @@ class Router {
         } else {
             navReportsEl.classList.remove('hidden');
             navReportsEl.style.display = '';
-        }
         }
     }
 
