@@ -26,9 +26,17 @@ class PurchaseOrderController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
+        // Strictly block Salesperson accounts; Purchase Orders require Admin/Super Admin + canManagePurchaseOrders
+        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+            Response::json([
+                'success' => false,
+                'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access Purchase Orders.'
+            ], 403);
+        }
+
         switch ($method) {
             case 'GET':
-                RBACMiddleware::checkPermission($user, 'canViewSuppliers');
+                RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
                 if ($id !== null && ($subresource === 'export-xml' || $subresource === 'export')) {
                     $this->exportXml($id);
                 } elseif ($id !== null) {

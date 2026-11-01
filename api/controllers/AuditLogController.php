@@ -27,9 +27,12 @@ class AuditLogController {
 
         switch ($method) {
             case 'GET':
-                // Check if user has permission to view reports or is Super Admin/Admin
-                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'])) {
-                    RBACMiddleware::checkPermission($user, 'canViewReports');
+                // Strictly restrict System Audit Trail to Super Admin and Admin accounts
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    Response::json([
+                        'success' => false,
+                        'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access Audit Logs.'
+                    ], 403);
                 }
                 $this->getAll();
                 break;

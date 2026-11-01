@@ -42,11 +42,20 @@ class UserController {
             return;
         }
 
-        // All User Management operations require Super Admin
-        if (($user['role'] ?? '') !== 'Super Admin') {
+        // Strictly block Salesperson accounts from accessing User Management endpoints
+        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
             Response::json([
                 'success' => false,
-                'message' => 'Forbidden: Only Super Admin can manage system users.'
+                'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access User Management.'
+            ], 403);
+            return;
+        }
+
+        // Write mutations (create, update, status toggle, delete) require Super Admin or explicit canManageUsers
+        if ($method !== 'GET' && ($user['role'] ?? '') !== 'Super Admin' && !in_array('canManageUsers', $user['permissions'] ?? [], true)) {
+            Response::json([
+                'success' => false,
+                'message' => '403 Forbidden: Only Super Admin can create, modify, or delete user accounts.'
             ], 403);
             return;
         }

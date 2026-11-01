@@ -311,6 +311,7 @@ export const UsersPage = {
                     </td>
                     <td class="text-sm text-muted">${createdDate}</td>
                     <td class="text-right">
+                        ${State.user && State.user.role === 'Super Admin' ? `
                         <div class="flex justify-end gap-1">
                             <button class="btn btn-secondary btn-sm edit-user-btn" data-id="${user.id}" title="Edit User">
                                 ✏️ Edit
@@ -326,6 +327,7 @@ export const UsersPage = {
                                 </button>
                             ` : ''}
                         </div>
+                        ` : '<span class="text-xs text-muted">Read-only</span>'}
                     </td>
                 </tr>
             `;
