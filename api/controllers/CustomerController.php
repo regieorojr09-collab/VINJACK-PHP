@@ -24,15 +24,8 @@ class CustomerController {
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
-
-        // Strictly restrict all Customer endpoints (GET, POST, PUT, DELETE) to Super Admin only
-        if (($user['role'] ?? '') !== 'Super Admin') {
-            Response::json([
-                'success' => false,
-                'message' => '403 Forbidden: Super Admin Access Only.'
-            ], 403);
-            return;
-        }
+        $role = $user['role'] ?? '';
+        $isAuthorizedStaff = in_array($role, ['Super Admin', 'Admin', 'Salesperson'], true);
 
         switch ($method) {
             case 'GET':
