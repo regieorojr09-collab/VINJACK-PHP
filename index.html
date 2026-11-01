@@ -45,7 +45,7 @@
                 <a href="#/products" class="nav-link" id="nav-products">
                     <i class="nav-icon">📦</i> <span class="nav-text">Inventory</span>
                 </a>
-                <a href="#/purchase-orders" class="nav-link" id="nav-purchase-orders">
+                <a href="#/purchase-orders" class="nav-link hidden" id="nav-purchase-orders" data-permission="canManagePurchaseOrders" style="display: none;">
                     <i class="nav-icon">📋</i> <span class="nav-text">Purchase Orders</span>
                 </a>
                 <a href="#/suppliers" class="nav-link" id="nav-suppliers">
@@ -53,17 +53,17 @@
                 </a>
 
                 <!-- REPORTS SECTION -->
-                <div class="sidebar-section-title">REPORTS</div>
+                <div class="sidebar-section-title hidden" id="nav-section-reports" style="display: none;">REPORTS</div>
                 <a href="#/reports" class="nav-link hidden" id="nav-reports" data-permission="canViewReports" style="display: none;">
                     <i class="nav-icon">📊</i> <span class="nav-text">Reports</span>
                 </a>
-                <a href="#/audit-log" class="nav-link" id="nav-audit-log">
+                <a href="#/audit-log" class="nav-link hidden" id="nav-audit-log" style="display: none;">
                     <i class="nav-icon">📑</i> <span class="nav-text">Audit Log</span>
                 </a>
 
                 <!-- ADMIN SECTION -->
-                <div class="sidebar-section-title">ADMIN</div>
-                <a href="#/users" class="nav-link" id="nav-user-mgmt">
+                <div class="sidebar-section-title hidden" id="nav-section-admin" style="display: none;">ADMIN</div>
+                <a href="#/users" class="nav-link hidden" id="nav-user-mgmt" style="display: none;">
                     <i class="nav-icon">👤</i> <span class="nav-text">User Management</span>
                 </a>
             </nav>
@@ -120,7 +120,7 @@
 
     <!-- Application Bootstrap (ES6 Modules) -->
     <script type="module">
-        import { router } from './public/js/router.js?v=20261101b';
+        import { router } from './public/js/router.js?v=20261101c';
         document.addEventListener('DOMContentLoaded', () => {
             router.init();
         });
