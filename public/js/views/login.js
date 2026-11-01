@@ -54,7 +54,7 @@ export const LoginPage = {
                     State.setAlert(`Welcome back, ${response.user.full_name || response.user.username}!`, 'success');
                     window.location.hash = typeof State.getDefaultRoute === 'function'
                         ? State.getDefaultRoute()
-                        : (response.user.role === 'Super Admin' ? '#/dashboard' : '#/pos');
+                        : ((response.user.role === 'Super Admin' || response.user.role === 'Admin') ? '#/dashboard' : '#/pos');
                 } else {
                     throw new Error(response.message || 'Login failed.');
                 }
