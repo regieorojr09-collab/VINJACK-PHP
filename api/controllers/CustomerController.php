@@ -29,7 +29,9 @@ class CustomerController {
 
         switch ($method) {
             case 'GET':
-                RBACMiddleware::checkPermission($user, 'canManageCustomers');
+                if (!$isAuthorizedStaff) {
+                    RBACMiddleware::checkPermission($user, ['canManageCustomers', 'canManageSales', 'canViewDashboard']);
+                }
                 if ($id !== null) {
                     $this->getById($id);
                 } else {
@@ -38,7 +40,9 @@ class CustomerController {
                 break;
 
             case 'POST':
-                RBACMiddleware::checkPermission($user, 'canManageCustomers');
+                if (!$isAuthorizedStaff) {
+                    RBACMiddleware::checkPermission($user, ['canManageCustomers', 'canManageSales', 'canViewDashboard']);
+                }
                 if ($id !== null && $subresource === 'motorcycles') {
                     $this->addMotorcycle($id);
                 } else {
@@ -47,7 +51,9 @@ class CustomerController {
                 break;
 
             case 'PUT':
-                RBACMiddleware::checkPermission($user, 'canManageCustomers');
+                if (!$isAuthorizedStaff) {
+                    RBACMiddleware::checkPermission($user, ['canManageCustomers', 'canManageSales', 'canViewDashboard']);
+                }
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Customer ID required.'], 400);
                 }
@@ -55,7 +61,9 @@ class CustomerController {
                 break;
 
             case 'DELETE':
-                RBACMiddleware::checkPermission($user, 'canManageCustomers');
+                if (!$isAuthorizedStaff) {
+                    RBACMiddleware::checkPermission($user, ['canManageCustomers', 'canManageSales', 'canViewDashboard']);
+                }
                 if ($id !== null && $subresource === 'motorcycles') {
                     $motoId = isset($_GET['motorcycle_id']) ? (int)$_GET['motorcycle_id'] : null;
                     if (!$motoId) {
