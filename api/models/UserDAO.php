@@ -45,7 +45,6 @@ class UserDAO {
             $baselineSalespersonPerms = [
                 'canViewDashboard',
                 'canViewInventory',
-                'canViewSuppliers',
                 'canManageSales',
                 'canManageCustomers'
             ];

@@ -39,7 +39,6 @@ FROM `role_permissions` r
 JOIN `all_permissions` p ON p.`key` IN (
     'canViewDashboard',
     'canViewInventory',
-    'canViewSuppliers',
     'canManageSales',
     'canManageCustomers'
 )

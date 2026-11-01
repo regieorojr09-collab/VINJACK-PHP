@@ -25,6 +25,15 @@ class SupplierController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
+        // Strictly block Salesperson accounts; Suppliers module requires Admin or Super Admin privileges
+        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+            Response::json([
+                'success' => false,
+                'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access Suppliers.'
+            ], 403);
+            return;
+        }
+
         switch ($method) {
             case 'GET':
                 RBACMiddleware::checkPermission($user, 'canViewSuppliers');

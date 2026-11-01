@@ -347,6 +347,11 @@ export const ProductsPage = {
 
     async loadSuppliers() {
         try {
+            const role = State.user?.role || '';
+            if (role !== 'Super Admin' && role !== 'Admin') {
+                this.state.suppliers = [];
+                return;
+            }
             const res = await apiClient.get('suppliers');
             if (res.success) {
                 this.state.suppliers = res.data;
