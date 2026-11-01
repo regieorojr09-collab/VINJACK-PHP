@@ -54,7 +54,7 @@
 
                 <!-- REPORTS SECTION -->
                 <div class="sidebar-section-title">REPORTS</div>
-                <a href="#/reports" class="nav-link" id="nav-reports">
+                <a href="#/reports" class="nav-link hidden" id="nav-reports" data-permission="canViewReports" style="display: none;">
                     <i class="nav-icon">📊</i> <span class="nav-text">Reports</span>
                 </a>
                 <a href="#/audit-log" class="nav-link" id="nav-audit-log">
@@ -120,7 +120,7 @@
 
     <!-- Application Bootstrap (ES6 Modules) -->
     <script type="module">
-        import { router } from './js/router.js';
+        import { router } from './js/router.js?v=20261101';
         document.addEventListener('DOMContentLoaded', () => {
             router.init();
         });
