@@ -42,7 +42,7 @@ class UserDAO {
 
         // Enforce strict separated RBAC permissions per role:
         // - Salesperson (Clerk): POS, Customers, and read-only Inventory
-        // - Admin (Mechanic): POS, full Inventory CRUD, Purchase Orders, Suppliers, and Reports
+        // - Admin (Mechanic): Dashboard, POS, Customers, full Inventory CRUD, Purchase Orders, Suppliers, and Reports
         if ($role === 'Salesperson') {
             $allowedSalespersonPerms = [
                 'canViewInventory',
@@ -52,9 +52,11 @@ class UserDAO {
             $permissions = $allowedSalespersonPerms;
         } elseif ($role === 'Admin') {
             $allowedAdminPerms = [
+                'canViewDashboard',
                 'canViewInventory',
                 'canManageInventory',
                 'canManageSales',
+                'canManageCustomers',
                 'canViewSuppliers',
                 'canManageSuppliers',
                 'canManagePurchaseOrders',

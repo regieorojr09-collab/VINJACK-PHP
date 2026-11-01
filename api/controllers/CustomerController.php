@@ -25,16 +25,7 @@ class CustomerController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
         $role = $user['role'] ?? '';
-
-        // Customers module is restricted to Super Admin and Salesperson (Clerk); blocked for Admin (Mechanic)
-        if (!in_array($role, ['Super Admin', 'Salesperson'], true)) {
-            Response::json([
-                'success' => false,
-                'message' => '403 Forbidden: Access Denied to Customers module.'
-            ], 403);
-            return;
-        }
-        $isAuthorizedStaff = true;
+        $isAuthorizedStaff = in_array($role, ['Super Admin', 'Admin', 'Salesperson'], true);
 
         switch ($method) {
             case 'GET':

@@ -43,8 +43,8 @@ class ReportController {
         switch ($action) {
             case 'dashboard':
             case 'top-selling':
-                // Dashboard is reserved strictly for Super Admin (hidden for Admin/Mechanic & Salesperson/Clerk)
-                if (!$isSuperAdmin) {
+                // Dashboard metrics permitted for Super Admin and Admin (Mechanic); blocked for Salesperson (Clerk)
+                if (!$canViewReportsRole) {
                     Response::json([
                         'success' => false,
                         'message' => '403 Forbidden: Access Denied to Dashboard.'
