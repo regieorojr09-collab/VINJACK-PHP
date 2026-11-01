@@ -42,11 +42,11 @@ class UserController {
             return;
         }
 
-        // Strictly block Salesperson accounts from accessing User Management endpoints
-        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+        // Strictly restrict User Management endpoints to Super Admin only
+        if (($user['role'] ?? '') !== 'Super Admin') {
             Response::json([
                 'success' => false,
-                'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access User Management.'
+                'message' => '403 Forbidden: Super Admin Access Only.'
             ], 403);
             return;
         }

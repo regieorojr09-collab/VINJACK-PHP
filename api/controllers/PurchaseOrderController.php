@@ -26,12 +26,13 @@ class PurchaseOrderController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
-        // Strictly block Salesperson accounts; Purchase Orders require Admin/Super Admin + canManagePurchaseOrders
-        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+        // Strictly reserve Purchase Orders module for Super Admin only
+        if (($user['role'] ?? '') !== 'Super Admin') {
             Response::json([
                 'success' => false,
-                'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access Purchase Orders.'
+                'message' => '403 Forbidden: Super Admin Access Only.'
             ], 403);
+            return;
         }
 
         switch ($method) {

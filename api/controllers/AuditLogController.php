@@ -27,12 +27,13 @@ class AuditLogController {
 
         switch ($method) {
             case 'GET':
-                // Strictly restrict System Audit Trail to Super Admin and Admin accounts
-                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                // Strictly restrict System Audit Trail to Super Admin only
+                if (($user['role'] ?? '') !== 'Super Admin') {
                     Response::json([
                         'success' => false,
-                        'message' => '403 Forbidden: Access Denied. Only Admins and Super Admins can access Audit Logs.'
+                        'message' => '403 Forbidden: Super Admin Access Only.'
                     ], 403);
+                    return;
                 }
                 $this->getAll();
                 break;
