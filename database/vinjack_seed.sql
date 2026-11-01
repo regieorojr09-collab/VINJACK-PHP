@@ -24,23 +24,26 @@ INSERT IGNORE INTO `role_permissions` (`role`) VALUES
 ('Salesperson');
 
 -- 3. Map Default Permissions to Roles
--- 3a. Admin receives full operational & reporting permissions
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
-SELECT r.id, p.`key`
-FROM `role_permissions` r
-CROSS JOIN `all_permissions` p
-WHERE r.`role` = 'Admin';
-
--- 3b. Salesperson explicitly includes canViewDashboard + baseline read-only & POS permissions
--- (Excludes higher-level financial/COGS 'canViewReports' and administrative write permissions)
+-- 3a. Admin (Lead Mechanic) restricted strictly to Dashboard, POS, and Inventory
 INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
 SELECT r.id, p.`key`
 FROM `role_permissions` r
 JOIN `all_permissions` p ON p.`key` IN (
     'canViewDashboard',
     'canViewInventory',
-    'canManageSales',
-    'canManageCustomers'
+    'canManageInventory',
+    'canManageSales'
+)
+WHERE r.`role` = 'Admin';
+
+-- 3b. Salesperson (Counter Clerk) restricted strictly to Dashboard, POS, and read-only Inventory
+INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
+SELECT r.id, p.`key`
+FROM `role_permissions` r
+JOIN `all_permissions` p ON p.`key` IN (
+    'canViewDashboard',
+    'canViewInventory',
+    'canManageSales'
 )
 WHERE r.`role` = 'Salesperson';
 

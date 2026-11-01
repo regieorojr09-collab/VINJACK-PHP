@@ -40,29 +40,28 @@ class UserDAO {
         $results = $stmt->fetchAll();
         $permissions = array_column($results, 'permission_key');
 
-        // Guarantee baseline Salesperson permissions even if DB seed was partially applied
+        // Enforce strict module boundaries: non-Super-Admin roles are restricted to Dashboard, POS, and Inventory
         if ($role === 'Salesperson') {
-            $baselineSalespersonPerms = [
+            $allowedSalespersonPerms = [
                 'canViewDashboard',
                 'canViewInventory',
-                'canManageSales',
-                'canManageCustomers'
+                'canManageSales'
             ];
-            $permissions = array_values(array_unique(array_merge($permissions, $baselineSalespersonPerms)));
-        } elseif ($role === 'Admin' && empty($permissions)) {
-            $permissions = [
+            $permissions = array_values(array_intersect(
+                array_unique(array_merge($permissions, $allowedSalespersonPerms)),
+                $allowedSalespersonPerms
+            ));
+        } elseif ($role === 'Admin') {
+            $allowedAdminPerms = [
                 'canViewDashboard',
                 'canViewInventory',
                 'canManageInventory',
-                'canManageSales',
-                'canViewSuppliers',
-                'canManageSuppliers',
-                'canManagePurchaseOrders',
-                'canManageDeliveries',
-                'canManageCustomers',
-                'canManageReturns',
-                'canViewReports'
+                'canManageSales'
             ];
+            $permissions = array_values(array_intersect(
+                array_unique(array_merge($permissions, $allowedAdminPerms)),
+                $allowedAdminPerms
+            ));
         }
 
         return $permissions;
