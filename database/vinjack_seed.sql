@@ -24,25 +24,26 @@ INSERT IGNORE INTO `role_permissions` (`role`) VALUES
 ('Salesperson');
 
 -- 3. Map Default Permissions to Roles
--- 3a. Admin (Lead Mechanic) restricted strictly to Dashboard, POS, Customers, and Inventory
+-- 3a. Admin (Lead Mechanic): POS, full Inventory CRUD, Purchase Orders, Suppliers, and Reports
 INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
 SELECT r.id, p.`key`
 FROM `role_permissions` r
 JOIN `all_permissions` p ON p.`key` IN (
-    'canViewDashboard',
     'canViewInventory',
     'canManageInventory',
     'canManageSales',
-    'canManageCustomers'
+    'canViewSuppliers',
+    'canManageSuppliers',
+    'canManagePurchaseOrders',
+    'canViewReports'
 )
 WHERE r.`role` = 'Admin';
 
--- 3b. Salesperson (Counter Clerk) restricted strictly to Dashboard, POS, Customers, and read-only Inventory
+-- 3b. Salesperson (Counter Clerk): POS, Customers, and read-only Inventory
 INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
 SELECT r.id, p.`key`
 FROM `role_permissions` r
 JOIN `all_permissions` p ON p.`key` IN (
-    'canViewDashboard',
     'canViewInventory',
     'canManageSales',
     'canManageCustomers'

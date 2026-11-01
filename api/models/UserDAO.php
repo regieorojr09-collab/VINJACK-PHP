@@ -40,30 +40,27 @@ class UserDAO {
         $results = $stmt->fetchAll();
         $permissions = array_column($results, 'permission_key');
 
-        // Enforce strict module boundaries: non-Super-Admin roles are restricted to Dashboard, POS, Customers, and Inventory
+        // Enforce strict separated RBAC permissions per role:
+        // - Salesperson (Clerk): POS, Customers, and read-only Inventory
+        // - Admin (Mechanic): POS, full Inventory CRUD, Purchase Orders, Suppliers, and Reports
         if ($role === 'Salesperson') {
             $allowedSalespersonPerms = [
-                'canViewDashboard',
                 'canViewInventory',
                 'canManageSales',
                 'canManageCustomers'
             ];
-            $permissions = array_values(array_intersect(
-                array_unique(array_merge($permissions, $allowedSalespersonPerms)),
-                $allowedSalespersonPerms
-            ));
+            $permissions = $allowedSalespersonPerms;
         } elseif ($role === 'Admin') {
             $allowedAdminPerms = [
-                'canViewDashboard',
                 'canViewInventory',
                 'canManageInventory',
                 'canManageSales',
-                'canManageCustomers'
+                'canViewSuppliers',
+                'canManageSuppliers',
+                'canManagePurchaseOrders',
+                'canViewReports'
             ];
-            $permissions = array_values(array_intersect(
-                array_unique(array_merge($permissions, $allowedAdminPerms)),
-                $allowedAdminPerms
-            ));
+            $permissions = $allowedAdminPerms;
         }
 
         return $permissions;
