@@ -114,6 +114,19 @@ class StateStore {
     }
 
     /**
+     * Resolve default landing hash route based on the active user's role.
+     * - Super Admin -> #/dashboard
+     * - Admin (Mechanic) -> #/pos
+     * - Salesperson (Clerk) -> #/pos
+     */
+    getDefaultRoute() {
+        if (!this.isAuthenticated() || !this.user) {
+            return '#/login';
+        }
+        return this.user.role === 'Super Admin' ? '#/dashboard' : '#/pos';
+    }
+
+    /**
      * Check whether the authenticated user is strictly a Super Admin.
      */
     isSuperAdmin() {
@@ -172,16 +185,26 @@ class StateStore {
                 }
             };
 
-            const isAuthenticated = this.isAuthenticated();
-            const isSuperAdmin = this.isSuperAdmin();
+            const isAuth = this.isAuthenticated();
+            const role = isAuth ? (this.user?.role || '') : '';
+            const isSuperAdmin = role === 'Super Admin';
+            const isAdmin = role === 'Admin';
+            const isSalesperson = role === 'Salesperson';
 
-            toggleSafe('#nav-customers', isAuthenticated);
-            toggleSafe('#nav-reports', isSuperAdmin);
-            toggleSafe('#nav-user-mgmt', isSuperAdmin);
+            // Exact role-separated sidebar matrix:
+            // - Super Admin: Dashboard, POS, Customers, Inventory, Purchase Orders, Suppliers, Reports, Audit Log, User Mgmt
+            // - Admin (Mechanic): POS, Inventory, Purchase Orders, Suppliers, Reports
+            // - Salesperson (Clerk): POS, Customers, Inventory
+            toggleSafe('#nav-dashboard', isSuperAdmin);
+            toggleSafe('#nav-pos', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
+            toggleSafe('#nav-customers', isSuperAdmin || isSalesperson);
+            toggleSafe('#nav-products', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
+            toggleSafe('#nav-purchase-orders', isSuperAdmin || isAdmin);
+            toggleSafe('#nav-suppliers', isSuperAdmin || isAdmin);
+            toggleSafe('#nav-reports', isSuperAdmin || isAdmin);
             toggleSafe('#nav-audit-log', isSuperAdmin);
-            toggleSafe('#nav-purchase-orders', isSuperAdmin);
-            toggleSafe('#nav-suppliers', isSuperAdmin);
-            toggleSafe('#nav-section-reports', isSuperAdmin);
+            toggleSafe('#nav-user-mgmt', isSuperAdmin);
+            toggleSafe('#nav-section-reports', isSuperAdmin || isAdmin);
             toggleSafe('#nav-section-admin', isSuperAdmin);
         } catch (err) {
             console.warn('[State] Safe sidebar sync skipped:', err);
