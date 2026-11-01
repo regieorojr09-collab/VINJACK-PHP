@@ -145,6 +145,12 @@ class Router {
             return;
         }
 
+        if (State.isAuthenticated() && (path === '/reports' || path === '/analytics') && !State.hasPermission('canViewReports')) {
+            State.setAlert('Access restricted: Missing canViewReports permission for the Reports module.', 'warning');
+            window.location.hash = '#/dashboard';
+            return;
+        }
+
         const route = this.routes[path];
         if (route) {
             this.renderView(route.view, route.title, path);
@@ -228,6 +234,12 @@ class Router {
             if (dropdownNameEl) dropdownNameEl.textContent = user.full_name || user.username;
             if (dropdownUsernameEl) dropdownUsernameEl.textContent = '@' + (user.username || 'user');
             if (dropdownRoleEl) dropdownRoleEl.textContent = user.role;
+
+            // Hide standalone Reports nav link for clerks lacking canViewReports
+            const navReportsEl = document.getElementById('nav-reports');
+            if (navReportsEl) {
+                navReportsEl.classList.toggle('hidden', !State.hasPermission('canViewReports'));
+            }
         } else {
             this.sidebarEl?.classList.add('hidden');
             this.topbarEl?.classList.add('hidden');

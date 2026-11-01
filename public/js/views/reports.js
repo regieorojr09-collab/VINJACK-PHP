@@ -23,6 +23,17 @@ export const ReportsPage = {
     },
 
     render() {
+        if (!State.hasPermission('canViewReports')) {
+            return `
+                <div class="view-container p-4">
+                    <div class="card text-center py-8">
+                        <h2 class="text-xl font-bold mb-2">Access Restricted</h2>
+                        <p class="text-muted text-sm mb-4">You do not have permission (<code>canViewReports</code>) to view standalone financial reports.</p>
+                        <a href="#/dashboard" class="btn btn-primary inline-block">Return to Dashboard</a>
+                    </div>
+                </div>
+            `;
+        }
         return `
             <div class="view-container">
                 <!-- Header with Action Buttons -->
@@ -260,6 +271,9 @@ export const ReportsPage = {
     },
 
     async init() {
+        if (!State.hasPermission('canViewReports')) {
+            return;
+        }
         this.setupEventListeners();
         await this.loadCategories();
         await this.loadReports();
