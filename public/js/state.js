@@ -8,13 +8,24 @@ class StateStore {
     constructor() {
         this.listeners = new Map();
 
-        // Restore authenticated session from localStorage
-        const savedToken = localStorage.getItem('vinjack_jwt');
-        const savedUser = localStorage.getItem('vinjack_user');
+        // Safely restore authenticated session from localStorage
+        let parsedUser = null;
+        let savedToken = null;
+        try {
+            savedToken = localStorage.getItem('vinjack_jwt');
+            const savedUser = localStorage.getItem('vinjack_user');
+            parsedUser = savedUser ? JSON.parse(savedUser) : null;
+        } catch (err) {
+            console.warn('[State] Cleared corrupted session storage:', err);
+            try {
+                localStorage.removeItem('vinjack_jwt');
+                localStorage.removeItem('vinjack_user');
+            } catch (_) {}
+        }
 
         this.token = savedToken || null;
-        this.user = savedUser ? JSON.parse(savedUser) : null;
-        this.activeRoute = window.location.hash || '#/products';
+        this.user = parsedUser;
+        this.activeRoute = (typeof window !== 'undefined' && window.location?.hash) ? window.location.hash : '#/products';
         this.flashAlert = null;
         this.categories = [];
         this.brands = [];
@@ -60,11 +71,15 @@ class StateStore {
         this.user = user;
         this.token = token;
 
-        if (token) {
-            localStorage.setItem('vinjack_jwt', token);
-        }
-        if (user) {
-            localStorage.setItem('vinjack_user', JSON.stringify(user));
+        try {
+            if (token) {
+                localStorage.setItem('vinjack_jwt', token);
+            }
+            if (user) {
+                localStorage.setItem('vinjack_user', JSON.stringify(user));
+            }
+        } catch (err) {
+            console.warn('[State] Unable to persist session:', err);
         }
 
         this.syncSidebarPermissions();
@@ -77,8 +92,12 @@ class StateStore {
     clearUser() {
         this.user = null;
         this.token = null;
-        localStorage.removeItem('vinjack_jwt');
-        localStorage.removeItem('vinjack_user');
+        try {
+            localStorage.removeItem('vinjack_jwt');
+            localStorage.removeItem('vinjack_user');
+        } catch (err) {
+            console.warn('[State] Unable to clear storage:', err);
+        }
 
         this.syncSidebarPermissions();
         this.publish('auth:changed', false);
@@ -95,8 +114,7 @@ class StateStore {
     }
 
     /**
-     * Check whether the authenticated user holds Admin or Super Admin privileges
-     * (strictly false for Salesperson / Clerk accounts).
+     * Check whether the authenticated user holds Admin or Super Admin privileges.
      */
     isAdminUser() {
         if (!this.isAuthenticated() || !this.user) return false;
@@ -106,42 +124,62 @@ class StateStore {
     hasPermission(permissionKey) {
         if (!this.user) return false;
         if (this.user.role === 'Super Admin') return true;
-        const permissions = this.user.permissions || [];
+        const permissions = Array.isArray(this.user.permissions) ? this.user.permissions : [];
         return permissions.includes(permissionKey);
     }
 
     /**
-     * Conditionally hide or show RBAC-restricted sidebar navigation modules
-     * (#nav-user-mgmt, #nav-audit-log, #nav-purchase-orders, #nav-reports)
-     * whenever the user logs in, logs out, or refreshes the page.
+     * Safely toggle visibility on RBAC-restricted sidebar elements only when present in DOM.
      */
     syncSidebarPermissions() {
-        if (typeof document === 'undefined') return;
-
-        const toggleEl = (id, visible) => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (!visible) {
-                el.classList.add('hidden');
-                el.style.display = 'none';
-            } else {
-                el.classList.remove('hidden');
-                el.style.display = '';
+        try {
+            if (typeof document === 'undefined' || typeof document.querySelector !== 'function') {
+                return;
             }
-        };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.syncSidebarPermissions(), { once: true });
+                return;
+            }
 
-        const isAdmin = this.isAdminUser();
-        const canPurchaseOrders = isAdmin && this.hasPermission('canManagePurchaseOrders');
-        const canReports = isAdmin && this.hasPermission('canViewReports');
-        const canAuditLog = isAdmin;
-        const canUserMgmt = isAdmin;
+            const toggleSafe = (selector, visible) => {
+                const el = document.querySelector(selector);
+                if (!el) return;
+                if (visible) {
+                    el.classList?.remove('hidden');
+                    if (el.style) {
+                        if (typeof el.style.removeProperty === 'function') {
+                            el.style.removeProperty('display');
+                        } else {
+                            el.style.display = '';
+                        }
+                    }
+                } else {
+                    el.classList?.add('hidden');
+                    if (el.style) {
+                        if (typeof el.style.setProperty === 'function') {
+                            el.style.setProperty('display', 'none');
+                        } else {
+                            el.style.display = 'none';
+                        }
+                    }
+                }
+            };
 
-        toggleEl('nav-purchase-orders', canPurchaseOrders);
-        toggleEl('nav-reports', canReports);
-        toggleEl('nav-audit-log', canAuditLog);
-        toggleEl('nav-user-mgmt', canUserMgmt);
-        toggleEl('nav-section-reports', canReports || canAuditLog);
-        toggleEl('nav-section-admin', canUserMgmt);
+            const isAdmin = this.isAdminUser();
+            const canPurchaseOrders = isAdmin && this.hasPermission('canManagePurchaseOrders');
+            const canReports = isAdmin && this.hasPermission('canViewReports');
+            const canAuditLog = isAdmin;
+            const canUserMgmt = isAdmin;
+
+            toggleSafe('#nav-user-mgmt', canUserMgmt);
+            toggleSafe('#nav-audit-log', canAuditLog);
+            toggleSafe('#nav-purchase-orders', canPurchaseOrders);
+            toggleSafe('#nav-reports', canReports);
+            toggleSafe('#nav-section-reports', canReports || canAuditLog);
+            toggleSafe('#nav-section-admin', canUserMgmt);
+        } catch (err) {
+            console.warn('[State] Safe sidebar sync skipped:', err);
+        }
     }
 
     /**

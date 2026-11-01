@@ -1,15 +1,15 @@
 import { State } from './state.js';
 import { LoginPage } from './views/login.js';
-import { DashboardPage } from './views/dashboard.js?v=20261101b';
-import { ReportsPage } from './views/reports.js';
+import { DashboardPage } from './views/dashboard.js?v=20261101d';
+import { ReportsPage } from './views/reports.js?v=20261101d';
 import { ProductsPage } from './views/products.js';
 import { SuppliersPage } from './views/suppliers.js';
 import { POSPage } from './views/pos.js';
 import { PurchaseOrdersPage } from './views/purchase_orders.js';
 import { MovementsPage } from './views/movements.js';
-import { UsersPage } from './views/users.js';
+import { UsersPage } from './views/users.js?v=20261101d';
 import { CustomersPage } from './views/customers.js';
-import { AuditLogsPage } from './views/audit_logs.js';
+import { AuditLogsPage } from './views/audit_logs.js?v=20261101d';
 
 /**
  * Client-Side Hash Router
@@ -57,7 +57,24 @@ class Router {
         this.topbarEl = null;
     }
 
+    /**
+     * Self-contained check for Admin / Super Admin role (safe even if an older state.js is cached).
+     */
+    hasAdminPrivileges() {
+        if (!State || typeof State.isAuthenticated !== 'function' || !State.isAuthenticated()) {
+            return false;
+        }
+        const role = State.user?.role || '';
+        return role === 'Super Admin' || role === 'Admin';
+    }
+
     init() {
+        // Ensure DOM is fully parsed before querying #app-root or #sidebar elements
+        if (typeof document !== 'undefined' && document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init(), { once: true });
+            return;
+        }
+
         this.appRoot = document.getElementById('app-root');
         this.pageTitleEl = document.getElementById('current-page-title');
         this.sidebarEl = document.getElementById('sidebar') || document.getElementById('app-sidebar');
@@ -87,18 +104,18 @@ class Router {
 
         profileToggle?.addEventListener('click', (e) => {
             e.stopPropagation();
-            profileMenu?.classList.toggle('hidden');
+            profileMenu?.classList?.toggle('hidden');
         });
 
         document.addEventListener('click', (e) => {
-            if (!profileMenu?.contains(e.target) && !profileToggle?.contains(e.target)) {
-                profileMenu?.classList.add('hidden');
+            if (!profileMenu?.contains?.(e.target) && !profileToggle?.contains?.(e.target)) {
+                profileMenu?.classList?.add('hidden');
             }
         });
 
         // Setup Logout handlers (Dropdown Logout & Fallback)
         const handleLogout = () => {
-            profileMenu?.classList.add('hidden');
+            profileMenu?.classList?.add('hidden');
             State.clearUser();
             State.setAlert('You have been signed out.', 'info');
         };
@@ -117,8 +134,8 @@ class Router {
         };
 
         sidebarToggle?.addEventListener('click', () => {
-            sidebar?.classList.toggle('collapsed');
-            const isCollapsed = sidebar?.classList.contains('collapsed');
+            sidebar?.classList?.toggle('collapsed');
+            const isCollapsed = sidebar?.classList?.contains('collapsed');
             updateCollapseButtonIcon(isCollapsed);
             try {
                 localStorage.setItem('sidebar_collapsed', isCollapsed ? 'true' : 'false');
@@ -128,14 +145,13 @@ class Router {
         // Restore collapsed state preference if saved
         try {
             if (localStorage.getItem('sidebar_collapsed') === 'true') {
-                sidebar?.classList.add('collapsed');
+                sidebar?.classList?.add('collapsed');
                 updateCollapseButtonIcon(true);
             }
         } catch (e) {}
 
-        // Initialize UI visibility and sidebar permissions based on current session
+        // Initialize UI visibility and sidebar permissions after sidebar DOM is available
         this.updateLayoutAuthVisibility(State.isAuthenticated());
-        this.applySidebarPermissions();
 
         // Initial Route Dispatch
         this.handleRoute();
@@ -145,7 +161,7 @@ class Router {
         const hash = window.location.hash || '#/dashboard';
         const path = hash.replace(/^#/, '');
 
-        // Enforce sidebar permission guards on every route evaluation & page refresh
+        // Enforce sidebar permission guards safely on every route evaluation
         this.applySidebarPermissions();
 
         // Auth Guard
@@ -161,7 +177,7 @@ class Router {
 
         // Strict RBAC Guard for User Management, Audit Log, Purchase Orders, and Reports
         if (State.isAuthenticated()) {
-            const isAdmin = State.isAdminUser();
+            const isAdmin = this.hasAdminPrivileges();
             const isPurchaseOrderRoute = path === '/purchase-orders' || path === '/purchase_orders';
             const isReportRoute = path === '/reports' || path === '/analytics';
 
@@ -190,6 +206,9 @@ class Router {
     }
 
     renderView(view, title, path) {
+        if (!this.appRoot) {
+            this.appRoot = document.getElementById('app-root');
+        }
         if (!this.appRoot) return;
 
         // Update active navigation item in sidebar
@@ -208,9 +227,9 @@ class Router {
         document.querySelectorAll('.nav-link').forEach(link => {
             const href = link.getAttribute('href');
             if (href === `#${path}` || href === `#${activeTarget}`) {
-                link.classList.add('active');
+                link.classList?.add('active');
             } else {
-                link.classList.remove('active');
+                link.classList?.remove('active');
             }
         });
 
@@ -221,6 +240,9 @@ class Router {
 
         // Render Component HTML
         this.appRoot.innerHTML = view.render();
+
+        // Re-verify sidebar permissions after view mount
+        this.applySidebarPermissions();
 
         // Lifecycle hook
         setTimeout(() => {
@@ -250,8 +272,11 @@ class Router {
         const user = State.user;
 
         if (isAuthenticated && user) {
-            this.sidebarEl?.classList.remove('hidden');
-            this.topbarEl?.classList.remove('hidden');
+            // Apply sidebar permission visibility before revealing the sidebar
+            this.applySidebarPermissions();
+
+            this.sidebarEl?.classList?.remove('hidden');
+            this.topbarEl?.classList?.remove('hidden');
 
             const userNameEl = document.getElementById('user-display-name');
             const userRoleEl = document.getElementById('user-display-role');
@@ -259,28 +284,78 @@ class Router {
             const dropdownUsernameEl = document.getElementById('dropdown-user-username');
             const dropdownRoleEl = document.getElementById('dropdown-user-role');
 
-            if (userNameEl) userNameEl.textContent = user.full_name || user.username;
-            if (userRoleEl) userRoleEl.textContent = user.role;
-            if (dropdownNameEl) dropdownNameEl.textContent = user.full_name || user.username;
+            if (userNameEl) userNameEl.textContent = user.full_name || user.username || '';
+            if (userRoleEl) userRoleEl.textContent = user.role || '';
+            if (dropdownNameEl) dropdownNameEl.textContent = user.full_name || user.username || '';
             if (dropdownUsernameEl) dropdownUsernameEl.textContent = '@' + (user.username || 'user');
-            if (dropdownRoleEl) dropdownRoleEl.textContent = user.role;
-
-            // Enforce sidebar RBAC visibility on login & session restore
-            this.applySidebarPermissions();
+            if (dropdownRoleEl) dropdownRoleEl.textContent = user.role || '';
         } else {
-            this.sidebarEl?.classList.add('hidden');
-            this.topbarEl?.classList.add('hidden');
-            document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
+            this.sidebarEl?.classList?.add('hidden');
+            this.topbarEl?.classList?.add('hidden');
+            document.getElementById('profile-dropdown-menu')?.classList?.add('hidden');
             this.applySidebarPermissions();
         }
     }
 
     /**
-     * Hide #nav-user-mgmt, #nav-audit-log, #nav-purchase-orders, and #nav-reports
-     * whenever the user lacks Admin / Super Admin privileges.
+     * Null-safe helper to toggle visibility on a single selector without throwing if absent.
+     */
+    setElementVisibility(selector, isVisible) {
+        if (typeof document === 'undefined' || typeof document.querySelector !== 'function') {
+            return;
+        }
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        if (isVisible) {
+            el.classList?.remove('hidden');
+            if (el.style) {
+                if (typeof el.style.removeProperty === 'function') {
+                    el.style.removeProperty('display');
+                } else {
+                    el.style.display = '';
+                }
+            }
+        } else {
+            el.classList?.add('hidden');
+            if (el.style) {
+                if (typeof el.style.setProperty === 'function') {
+                    el.style.setProperty('display', 'none');
+                } else {
+                    el.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    /**
+     * Safely hide #nav-user-mgmt, #nav-audit-log, #nav-purchase-orders, and #nav-reports
+     * when the user lacks Admin / Super Admin privileges, only after DOM is ready.
      */
     applySidebarPermissions() {
-        State.syncSidebarPermissions();
+        try {
+            if (typeof document === 'undefined') return;
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.applySidebarPermissions(), { once: true });
+                return;
+            }
+
+            const isAdmin = this.hasAdminPrivileges();
+            const canPurchaseOrders = isAdmin && State.hasPermission('canManagePurchaseOrders');
+            const canReports = isAdmin && State.hasPermission('canViewReports');
+            const canAuditLog = isAdmin;
+            const canUserMgmt = isAdmin;
+
+            this.setElementVisibility('#nav-user-mgmt', canUserMgmt);
+            this.setElementVisibility('#nav-audit-log', canAuditLog);
+            this.setElementVisibility('#nav-purchase-orders', canPurchaseOrders);
+            this.setElementVisibility('#nav-reports', canReports);
+            this.setElementVisibility('#nav-section-reports', canReports || canAuditLog);
+            this.setElementVisibility('#nav-section-admin', canUserMgmt);
+        } catch (err) {
+            console.warn('[RBAC] Safe sidebar visibility check skipped:', err);
+        }
     }
 
     renderAlertBanner(alertData) {
@@ -289,7 +364,7 @@ class Router {
 
         if (!alertData) {
             container.innerHTML = '';
-            container.classList.add('hidden');
+            container.classList?.add('hidden');
             return;
         }
 
@@ -300,7 +375,7 @@ class Router {
                 <button id="dismiss-alert-btn" class="close-btn text-muted font-bold ml-3">&times;</button>
             </div>
         `;
-        container.classList.remove('hidden');
+        container.classList?.remove('hidden');
 
         document.getElementById('dismiss-alert-btn')?.addEventListener('click', () => {
             State.clearAlert();
