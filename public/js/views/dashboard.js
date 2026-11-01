@@ -6,7 +6,7 @@ import { State } from '../state.js';
  * 
  * Recreated pixel-perfect to match vinjacksystem.online/dashboard:
  * 1. Metric Cards (Revenue, Profit [restricted to canViewReports], Sales, Items Sold, Stock Units, SKUs)
- * 2. Revenue Trend Chart Area (visible across all roles with canViewDashboard)
+ * 2. Revenue Trend Chart Area (restricted to canViewReports: Admins & Super Admins only)
  * 3. Top 5 Selling Products and Top 5 Selling Services
  */
 export const DashboardPage = {
@@ -135,7 +135,8 @@ export const DashboardPage = {
                     </div>
                 </div>
 
-                <!-- 2. Middle Row: Revenue Trend Card (Visible across all Dashboard roles) -->
+                ${showFinancials ? `
+                <!-- 2. Middle Row: Revenue Trend Card (Restricted to canViewReports) -->
                 <div class="card p-4 mb-4" id="dash-trend-card">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="trend-badge green-badge">
@@ -156,6 +157,7 @@ export const DashboardPage = {
                         </div>
                     </div>
                 </div>
+                ` : ''}
 
                 <!-- 3. Bottom Row: Top 5 Selling Products & Top 5 Selling Services -->
                 <div class="grid grid-cols-2 gap-4 mb-4">
@@ -211,6 +213,13 @@ export const DashboardPage = {
     },
 
     async init() {
+        const canViewReports = State.hasPermission('canViewReports');
+        const trendCardEl = document.getElementById('dash-trend-card');
+        if (trendCardEl && !canViewReports) {
+            trendCardEl.classList.add('hidden');
+            trendCardEl.style.display = 'none';
+        }
+
         this.bindEvents();
         await this.loadDashboardData();
     },
@@ -265,13 +274,13 @@ export const DashboardPage = {
 
     async loadDashboardData() {
         const params = this.getDateRangeParams();
+        const canViewReports = State.hasPermission('canViewReports');
 
         try {
-            // Concurrent fetch of overview, top-selling, and revenue trend (all permitted via canViewDashboard)
-            const [overviewOutcome, topSellingOutcome, salesTrendOutcome] = await Promise.allSettled([
+            // Concurrent fetch of baseline overview and top-selling widgets (permitted for all Dashboard users)
+            const [overviewOutcome, topSellingOutcome] = await Promise.allSettled([
                 apiClient.get('reports/dashboard', params),
-                apiClient.get('reports/top-selling', { ...params, limit: 5 }),
-                apiClient.get('reports/sales', params)
+                apiClient.get('reports/top-selling', { ...params, limit: 5 })
             ]);
 
             if (overviewOutcome.status === 'fulfilled') {
@@ -295,19 +304,30 @@ export const DashboardPage = {
                 console.error('Failed to load top-selling metrics:', topSellingOutcome.reason);
             }
 
-            // Render Revenue Trend chart unconditionally across all roles, falling back cleanly if empty
-            if (salesTrendOutcome.status === 'fulfilled') {
-                const salesRes = salesTrendOutcome.value;
+            // Strictly fetch and render Revenue Trend chart only when user holds canViewReports
+            const trendCardEl = document.getElementById('dash-trend-card');
+            if (!canViewReports) {
+                if (trendCardEl) {
+                    trendCardEl.classList.add('hidden');
+                    trendCardEl.style.display = 'none';
+                }
+                return;
+            }
+
+            try {
+                const salesRes = await apiClient.get('reports/sales', params);
                 const records = Array.isArray(salesRes?.data?.records) ? salesRes.data.records : [];
                 this.renderRevenueTrendChart(records);
-            } else {
-                console.warn('Failed to load revenue trend data:', salesTrendOutcome.reason);
+            } catch (salesErr) {
+                console.warn('Failed to load revenue trend data:', salesErr);
                 this.renderRevenueTrendChart([]);
             }
 
         } catch (err) {
             console.error('Failed to load dashboard data:', err);
-            this.renderRevenueTrendChart([]);
+            if (canViewReports) {
+                this.renderRevenueTrendChart([]);
+            }
             State.setAlert('Failed to refresh dashboard performance metrics', 'danger');
         }
     },
