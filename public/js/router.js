@@ -1,15 +1,15 @@
 import { State } from './state.js';
-import { LoginPage } from './views/login.js?v=20261101j';
-import { DashboardPage } from './views/dashboard.js?v=20261101j';
-import { ReportsPage } from './views/reports.js?v=20261101j';
-import { ProductsPage } from './views/products.js?v=20261101j';
-import { SuppliersPage } from './views/suppliers.js?v=20261101j';
-import { POSPage } from './views/pos.js?v=20261101j';
-import { PurchaseOrdersPage } from './views/purchase_orders.js?v=20261101j';
-import { MovementsPage } from './views/movements.js?v=20261101j';
-import { UsersPage } from './views/users.js?v=20261101j';
-import { CustomersPage } from './views/customers.js?v=20261101j';
-import { AuditLogsPage } from './views/audit_logs.js?v=20261101j';
+import { LoginPage } from './views/login.js?v=20261101k';
+import { DashboardPage } from './views/dashboard.js?v=20261101k';
+import { ReportsPage } from './views/reports.js?v=20261101k';
+import { ProductsPage } from './views/products.js?v=20261101k';
+import { SuppliersPage } from './views/suppliers.js?v=20261101k';
+import { POSPage } from './views/pos.js?v=20261101k';
+import { PurchaseOrdersPage } from './views/purchase_orders.js?v=20261101k';
+import { MovementsPage } from './views/movements.js?v=20261101k';
+import { UsersPage } from './views/users.js?v=20261101k';
+import { CustomersPage } from './views/customers.js?v=20261101k';
+import { AuditLogsPage } from './views/audit_logs.js?v=20261101k';
 
 /**
  * Client-Side Hash Router
@@ -51,8 +51,10 @@ class Router {
                 '/customers'
             ]),
             Admin: new Set([
+                '/dashboard',
                 '/pos',
                 '/sales',
+                '/customers',
                 '/products',
                 '/inventory',
                 '/reports',
@@ -73,14 +75,15 @@ class Router {
     /**
      * Resolve default landing hash route per role:
      * - Super Admin -> #/dashboard
-     * - Admin (Mechanic) -> #/pos
+     * - Admin (Mechanic) -> #/dashboard
      * - Salesperson (Clerk) -> #/pos
      */
     getDefaultRoute() {
         if (!State || typeof State.isAuthenticated !== 'function' || !State.isAuthenticated()) {
             return '#/login';
         }
-        return (State.user?.role || '') === 'Super Admin' ? '#/dashboard' : '#/pos';
+        const role = State.user?.role || '';
+        return (role === 'Super Admin' || role === 'Admin') ? '#/dashboard' : '#/pos';
     }
 
     /**
@@ -387,9 +390,9 @@ class Router {
             const isAdmin = role === 'Admin';
             const isSalesperson = role === 'Salesperson';
 
-            this.setElementVisibility('#nav-dashboard', isSuperAdmin);
+            this.setElementVisibility('#nav-dashboard', isSuperAdmin || isAdmin);
             this.setElementVisibility('#nav-pos', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
-            this.setElementVisibility('#nav-customers', isSuperAdmin || isSalesperson);
+            this.setElementVisibility('#nav-customers', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
             this.setElementVisibility('#nav-products', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
             this.setElementVisibility('#nav-purchase-orders', isSuperAdmin || isAdmin);
             this.setElementVisibility('#nav-suppliers', isSuperAdmin || isAdmin);

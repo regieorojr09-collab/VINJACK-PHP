@@ -116,14 +116,16 @@ class StateStore {
     /**
      * Resolve default landing hash route based on the active user's role.
      * - Super Admin -> #/dashboard
-     * - Admin (Mechanic) -> #/pos
+     * - Admin (Mechanic) -> #/dashboard
      * - Salesperson (Clerk) -> #/pos
      */
     getDefaultRoute() {
         if (!this.isAuthenticated() || !this.user) {
             return '#/login';
         }
-        return this.user.role === 'Super Admin' ? '#/dashboard' : '#/pos';
+        return (this.user.role === 'Super Admin' || this.user.role === 'Admin')
+            ? '#/dashboard'
+            : '#/pos';
     }
 
     /**
@@ -147,9 +149,11 @@ class StateStore {
         if (role === 'Super Admin') return true;
         if (role === 'Admin') {
             const adminRolePerms = [
+                'canViewDashboard',
                 'canViewInventory',
                 'canManageInventory',
                 'canManageSales',
+                'canManageCustomers',
                 'canViewSuppliers',
                 'canManageSuppliers',
                 'canManagePurchaseOrders',
@@ -214,11 +218,11 @@ class StateStore {
 
             // Exact role-separated sidebar matrix:
             // - Super Admin: Dashboard, POS, Customers, Inventory, Purchase Orders, Suppliers, Reports, Audit Log, User Mgmt
-            // - Admin (Mechanic): POS, Inventory, Purchase Orders, Suppliers, Reports
+            // - Admin (Mechanic): Dashboard, POS, Customers, Inventory, Purchase Orders, Suppliers, Reports
             // - Salesperson (Clerk): POS, Customers, Inventory
-            toggleSafe('#nav-dashboard', isSuperAdmin);
+            toggleSafe('#nav-dashboard', isSuperAdmin || isAdmin);
             toggleSafe('#nav-pos', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
-            toggleSafe('#nav-customers', isSuperAdmin || isSalesperson);
+            toggleSafe('#nav-customers', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
             toggleSafe('#nav-products', isAuth && (isSuperAdmin || isAdmin || isSalesperson));
             toggleSafe('#nav-purchase-orders', isSuperAdmin || isAdmin);
             toggleSafe('#nav-suppliers', isSuperAdmin || isAdmin);
