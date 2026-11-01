@@ -143,7 +143,28 @@ class StateStore {
 
     hasPermission(permissionKey) {
         if (!this.user) return false;
-        if (this.user.role === 'Super Admin') return true;
+        const role = this.user.role || '';
+        if (role === 'Super Admin') return true;
+        if (role === 'Admin') {
+            const adminRolePerms = [
+                'canViewInventory',
+                'canManageInventory',
+                'canManageSales',
+                'canViewSuppliers',
+                'canManageSuppliers',
+                'canManagePurchaseOrders',
+                'canViewReports'
+            ];
+            return adminRolePerms.includes(permissionKey);
+        }
+        if (role === 'Salesperson') {
+            const salespersonRolePerms = [
+                'canViewInventory',
+                'canManageSales',
+                'canManageCustomers'
+            ];
+            return salespersonRolePerms.includes(permissionKey);
+        }
         const permissions = Array.isArray(this.user.permissions) ? this.user.permissions : [];
         return permissions.includes(permissionKey);
     }

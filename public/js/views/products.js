@@ -19,7 +19,7 @@ export const ProductsPage = {
     },
 
     render() {
-        const canManage = State.hasPermission('canManageInventory');
+        const canManage = this.canManageProducts();
 
         return `
             <div class="view-container">
@@ -348,7 +348,7 @@ export const ProductsPage = {
     async loadSuppliers() {
         try {
             const role = State.user?.role || '';
-            if (role !== 'Super Admin') {
+            if (role !== 'Super Admin' && role !== 'Admin') {
                 this.state.suppliers = [];
                 return;
             }
@@ -404,7 +404,7 @@ export const ProductsPage = {
             return;
         }
 
-        const canManage = State.hasPermission('canManageInventory');
+        const canManage = this.canManageProducts();
 
         tbody.innerHTML = products.map(p => {
             const badgeClass = this.getBadgeClass(p.stock_status);
@@ -479,6 +479,7 @@ export const ProductsPage = {
     },
 
     async openModal(id = null) {
+        if (!this.canManageProducts()) return;
         const modal = document.getElementById('product-modal');
         const title = document.getElementById('modal-title');
         const errorDiv = document.getElementById('modal-error');
@@ -532,6 +533,7 @@ export const ProductsPage = {
     },
 
     async saveProduct() {
+        if (!this.canManageProducts()) return;
         const errorDiv = document.getElementById('modal-error');
         const saveBtn = document.getElementById('save-product-btn');
         errorDiv.style.display = 'none';
@@ -599,6 +601,7 @@ export const ProductsPage = {
     },
 
     async confirmDelete(id, name) {
+        if (!this.canManageProducts()) return;
         if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
             return;
         }
