@@ -38,7 +38,35 @@ class UserDAO {
         $stmt->bindParam(':role', $role);
         $stmt->execute();
         $results = $stmt->fetchAll();
-        return array_column($results, 'permission_key');
+        $permissions = array_column($results, 'permission_key');
+
+        // Guarantee baseline Salesperson permissions even if DB seed was partially applied
+        if ($role === 'Salesperson') {
+            $baselineSalespersonPerms = [
+                'canViewDashboard',
+                'canViewInventory',
+                'canViewSuppliers',
+                'canManageSales',
+                'canManageCustomers'
+            ];
+            $permissions = array_values(array_unique(array_merge($permissions, $baselineSalespersonPerms)));
+        } elseif ($role === 'Admin' && empty($permissions)) {
+            $permissions = [
+                'canViewDashboard',
+                'canViewInventory',
+                'canManageInventory',
+                'canManageSales',
+                'canViewSuppliers',
+                'canManageSuppliers',
+                'canManagePurchaseOrders',
+                'canManageDeliveries',
+                'canManageCustomers',
+                'canManageReturns',
+                'canViewReports'
+            ];
+        }
+
+        return $permissions;
     }
 
     public function incrementFailedAttempts($id) {

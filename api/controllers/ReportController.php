@@ -33,13 +33,13 @@ class ReportController {
             case 'dashboard':
                 // Allows users with canViewDashboard OR canViewReports; Super Admin bypasses
                 RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
-                $this->getDashboardOverview();
+                $this->getDashboardOverview($user);
                 break;
 
             case 'top-selling':
                 // Dashboard widgets: allows users with canViewDashboard OR canViewReports; Super Admin bypasses
                 RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
-                $this->getTopSelling();
+                $this->getTopSelling($user);
                 break;
 
             case 'inventory-valuation':
@@ -61,12 +61,28 @@ class ReportController {
         }
     }
 
-    public function getDashboardOverview(): void {
+    private function hasReportAccess(?array $user): bool {
+        if ($user === null) {
+            return true;
+        }
+        if (($user['role'] ?? '') === 'Super Admin') {
+            return true;
+        }
+        return in_array('canViewReports', $user['permissions'] ?? [], true);
+    }
+
+    public function getDashboardOverview(?array $user = null): void {
         $startDate = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? Validator::sanitize($_GET['start_date']) : null;
         $endDate = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? Validator::sanitize($_GET['end_date']) : null;
 
         try {
             $data = $this->reportDAO->getDashboardOverview($startDate, $endDate);
+
+            // Redact sensitive COGS & net profit figures if user lacks higher-level canViewReports
+            if (!$this->hasReportAccess($user)) {
+                unset($data['total_cogs'], $data['gross_profit'], $data['profit_margin_percent']);
+            }
+
             Response::json([
                 'success' => true,
                 'data'    => $data
@@ -83,13 +99,22 @@ class ReportController {
         $this->getDashboardOverview();
     }
 
-    public function getTopSelling(): void {
+    public function getTopSelling(?array $user = null): void {
         $startDate = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? Validator::sanitize($_GET['start_date']) : null;
         $endDate = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? Validator::sanitize($_GET['end_date']) : null;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? (int)$_GET['limit'] : 5;
 
         try {
             $data = $this->reportDAO->getTopSelling($startDate, $endDate, $limit);
+
+            // Redact per-product COGS & gross profit if user lacks higher-level canViewReports
+            if (!$this->hasReportAccess($user) && !empty($data['products']) && is_array($data['products'])) {
+                foreach ($data['products'] as &$prod) {
+                    unset($prod['total_cogs'], $prod['gross_profit']);
+                }
+                unset($prod);
+            }
+
             Response::json([
                 'success' => true,
                 'data'    => $data

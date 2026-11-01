@@ -5,8 +5,8 @@ import { State } from '../state.js';
  * Executive Dashboard View
  * 
  * Recreated pixel-perfect to match vinjacksystem.online/dashboard:
- * 1. 6 Colored Metric Cards (Revenue, Profit, Sales, Items Sold, Stock Units, SKUs)
- * 2. Revenue Trend Chart Area with dynamic SVG or empty state placeholder
+ * 1. Metric Cards (Revenue, Profit [restricted to canViewReports], Sales, Items Sold, Stock Units, SKUs)
+ * 2. Revenue Trend Chart Area (restricted to canViewReports to prevent 403 errors for Salesperson)
  * 3. Top 5 Selling Products and Top 5 Selling Services
  */
 export const DashboardPage = {
@@ -14,6 +14,14 @@ export const DashboardPage = {
         range: 'all', // 'today', 'week', 'month', 'all'
         overview: null,
         topSelling: { products: [], services: [] }
+    },
+
+    /**
+     * Check whether the active user holds higher-level financial reporting privileges.
+     * Super Admin bypasses automatically via State.hasPermission().
+     */
+    canViewFinancials() {
+        return State.hasPermission('canViewReports');
     },
 
     render() {
@@ -24,6 +32,9 @@ export const DashboardPage = {
             'all': 'All Time'
         };
         const currentTrendLabel = rangeLabels[this.state.range] || 'All Time';
+        const showFinancials = this.canViewFinancials();
+        const metricsGridClass = showFinancials ? 'grid grid-cols-6 gap-3 mb-4' : 'grid gap-3 mb-4';
+        const metricsGridStyle = showFinancials ? '' : 'style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));"';
 
         return `
             <div class="view-container p-4">
@@ -41,8 +52,8 @@ export const DashboardPage = {
                     </div>
                 </div>
 
-                <!-- 1. Top Row: 6 Metric Cards Exactly Matching Screenshot -->
-                <div class="grid grid-cols-6 gap-3 mb-4">
+                <!-- 1. Top Row: Metric Cards (Net Profit hidden if user lacks canViewReports) -->
+                <div class="${metricsGridClass}" ${metricsGridStyle}>
                     <!-- Card 1: TOTAL REVENUE (Blue) -->
                     <div class="metric-card border-blue">
                         <div class="metric-content flex items-center gap-3">
@@ -56,8 +67,9 @@ export const DashboardPage = {
                         </div>
                     </div>
 
-                    <!-- Card 2: TOTAL PROFIT (Teal / Cyan) -->
-                    <div class="metric-card border-teal">
+                    ${showFinancials ? `
+                    <!-- Card 2: TOTAL PROFIT (Teal / Cyan) - Restricted to canViewReports -->
+                    <div class="metric-card border-teal" id="dash-profit-card">
                         <div class="metric-content flex items-center gap-3">
                             <div class="metric-icon-box icon-teal">
                                 <span>🪙</span>
@@ -68,6 +80,7 @@ export const DashboardPage = {
                             </div>
                         </div>
                     </div>
+                    ` : ''}
 
                     <!-- Card 3: TOTAL SALES (Green) -->
                     <div class="metric-card border-green">
@@ -122,8 +135,9 @@ export const DashboardPage = {
                     </div>
                 </div>
 
-                <!-- 2. Middle Row: Revenue Trend Card -->
-                <div class="card p-4 mb-4">
+                ${showFinancials ? `
+                <!-- 2. Middle Row: Financial Revenue & COGS Trend Card (Restricted to canViewReports) -->
+                <div class="card p-4 mb-4" id="dash-trend-card">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="trend-badge green-badge">
                             <span>📈</span>
@@ -143,6 +157,7 @@ export const DashboardPage = {
                         </div>
                     </div>
                 </div>
+                ` : ''}
 
                 <!-- 3. Bottom Row: Top 5 Selling Products & Top 5 Selling Services -->
                 <div class="grid grid-cols-2 gap-4 mb-4">
@@ -252,30 +267,49 @@ export const DashboardPage = {
 
     async loadDashboardData() {
         const params = this.getDateRangeParams();
+        const showFinancials = this.canViewFinancials();
 
         try {
-            // Concurrent fetch of overview and top selling
-            const [overviewRes, topSellingRes] = await Promise.all([
+            // Concurrent fetch of baseline overview and top-selling widgets (permitted via canViewDashboard)
+            const [overviewOutcome, topSellingOutcome] = await Promise.allSettled([
                 apiClient.get('reports/dashboard', params),
                 apiClient.get('reports/top-selling', { ...params, limit: 5 })
             ]);
 
-            if (overviewRes.success && overviewRes.data) {
-                this.state.overview = overviewRes.data;
-                this.renderOverview(overviewRes.data);
-            }
-
-            if (topSellingRes.success && topSellingRes.data) {
-                this.state.topSelling = topSellingRes.data;
-                this.renderTopSelling(topSellingRes.data);
-            }
-
-            // Fetch daily sales for trend chart
-            const salesRes = await apiClient.get('reports/sales', params);
-            if (salesRes.success && salesRes.data) {
-                this.renderRevenueTrendChart(salesRes.data.records || []);
+            if (overviewOutcome.status === 'fulfilled') {
+                const overviewRes = overviewOutcome.value;
+                if (overviewRes && overviewRes.success && overviewRes.data) {
+                    this.state.overview = overviewRes.data;
+                    this.renderOverview(overviewRes.data);
+                }
             } else {
-                this.renderRevenueTrendChart([]);
+                console.error('Failed to load dashboard overview:', overviewOutcome.reason);
+                State.setAlert('Failed to refresh dashboard performance metrics', 'danger');
+            }
+
+            if (topSellingOutcome.status === 'fulfilled') {
+                const topSellingRes = topSellingOutcome.value;
+                if (topSellingRes && topSellingRes.success && topSellingRes.data) {
+                    this.state.topSelling = topSellingRes.data;
+                    this.renderTopSelling(topSellingRes.data);
+                }
+            } else {
+                console.error('Failed to load top-selling metrics:', topSellingOutcome.reason);
+            }
+
+            // Only fetch financial daily sales / COGS report if user holds canViewReports
+            if (showFinancials) {
+                try {
+                    const salesRes = await apiClient.get('reports/sales', params);
+                    if (salesRes && salesRes.success && salesRes.data) {
+                        this.renderRevenueTrendChart(salesRes.data.records || []);
+                    } else {
+                        this.renderRevenueTrendChart([]);
+                    }
+                } catch (salesErr) {
+                    console.warn('Skipping financial trend chart:', salesErr);
+                    this.renderRevenueTrendChart([]);
+                }
             }
 
         } catch (err) {
@@ -291,10 +325,12 @@ export const DashboardPage = {
             revEl.textContent = this.formatCurrency(data.gross_sales || 0);
         }
 
-        // 2. Total Profit
-        const profitEl = document.getElementById('dash-net-profit');
-        if (profitEl) {
-            profitEl.textContent = this.formatCurrency(data.gross_profit || 0);
+        // 2. Total Profit (Only rendered when user has canViewReports)
+        if (this.canViewFinancials()) {
+            const profitEl = document.getElementById('dash-net-profit');
+            if (profitEl) {
+                profitEl.textContent = this.formatCurrency(data.gross_profit || 0);
+            }
         }
 
         // 3. Total Sales (Transaction Tickets)
