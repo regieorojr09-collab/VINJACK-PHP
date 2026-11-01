@@ -26,10 +26,22 @@ class ProductController {
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
         $actorId = (int)($user['id'] ?? 0);
+        $role = $user['role'] ?? '';
+        $canManageRole = in_array($role, ['Super Admin', 'Admin'], true);
+
+        if ($method !== 'GET' && $role === 'Salesperson') {
+            Response::json([
+                'success' => false,
+                'message' => '403 Forbidden: Salesperson role has view-only Inventory access.'
+            ], 403);
+            return;
+        }
 
         switch ($method) {
             case 'GET':
-                RBACMiddleware::checkPermission($user, 'canViewInventory');
+                if (!in_array($role, ['Super Admin', 'Admin', 'Salesperson'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canViewInventory');
+                }
                 if ($id !== null) {
                     $this->getProduct($id);
                 } else {
@@ -38,12 +50,16 @@ class ProductController {
                 break;
 
             case 'POST':
-                RBACMiddleware::checkPermission($user, 'canManageInventory');
+                if (!$canManageRole) {
+                    RBACMiddleware::checkPermission($user, 'canManageInventory');
+                }
                 $this->createProduct($actorId);
                 break;
 
             case 'PUT':
-                RBACMiddleware::checkPermission($user, 'canManageInventory');
+                if (!$canManageRole) {
+                    RBACMiddleware::checkPermission($user, 'canManageInventory');
+                }
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Product ID required for update.'], 400);
                 }
@@ -51,7 +67,9 @@ class ProductController {
                 break;
 
             case 'DELETE':
-                RBACMiddleware::checkPermission($user, 'canManageInventory');
+                if (!$canManageRole) {
+                    RBACMiddleware::checkPermission($user, 'canManageInventory');
+                }
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Product ID required for deletion.'], 400);
                 }

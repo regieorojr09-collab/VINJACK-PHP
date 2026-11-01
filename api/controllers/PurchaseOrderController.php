@@ -26,18 +26,20 @@ class PurchaseOrderController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
-        // Strictly reserve Purchase Orders module for Super Admin only
-        if (($user['role'] ?? '') !== 'Super Admin') {
+        // Purchase Orders module permitted for Super Admin and Admin (Mechanic); blocked for Salesperson (Clerk)
+        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
             Response::json([
                 'success' => false,
-                'message' => '403 Forbidden: Super Admin Access Only.'
+                'message' => '403 Forbidden: Access Denied to Purchase Orders.'
             ], 403);
             return;
         }
 
         switch ($method) {
             case 'GET':
-                RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                }
                 if ($id !== null && ($subresource === 'export-xml' || $subresource === 'export')) {
                     $this->exportXml($id);
                 } elseif ($id !== null) {
@@ -48,7 +50,9 @@ class PurchaseOrderController {
                 break;
 
             case 'POST':
-                RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                }
                 if ($id !== null && $subresource === 'receive') {
                     $this->receiveItems($id, (int)$user['id']);
                 } elseif ($id === null) {
@@ -59,7 +63,9 @@ class PurchaseOrderController {
                 break;
 
             case 'PUT':
-                RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManagePurchaseOrders');
+                }
                 if ($id !== null && $subresource === 'status') {
                     $this->updateStatus($id, (string)($user['full_name'] ?? $user['username']), (int)$user['id']);
                 } else {

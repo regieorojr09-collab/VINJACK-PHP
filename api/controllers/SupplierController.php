@@ -25,18 +25,20 @@ class SupplierController {
         $user = AuthMiddleware::authenticate();
         $subresource = $uriParts[2] ?? null;
 
-        // Strictly reserve Suppliers module for Super Admin only
-        if (($user['role'] ?? '') !== 'Super Admin') {
+        // Suppliers module permitted for Super Admin and Admin (Mechanic); blocked for Salesperson (Clerk)
+        if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
             Response::json([
                 'success' => false,
-                'message' => '403 Forbidden: Super Admin Access Only.'
+                'message' => '403 Forbidden: Access Denied to Suppliers.'
             ], 403);
             return;
         }
 
         switch ($method) {
             case 'GET':
-                RBACMiddleware::checkPermission($user, 'canViewSuppliers');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canViewSuppliers');
+                }
                 if ($id !== null) {
                     $this->getById($id);
                 } else {
@@ -45,12 +47,16 @@ class SupplierController {
                 break;
 
             case 'POST':
-                RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                }
                 $this->create();
                 break;
 
             case 'PUT':
-                RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                }
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Supplier ID required.'], 400);
                 }
@@ -62,7 +68,9 @@ class SupplierController {
                 break;
 
             case 'DELETE':
-                RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                if (!in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true)) {
+                    RBACMiddleware::checkPermission($user, 'canManageSuppliers');
+                }
                 if ($id === null) {
                     Response::json(['success' => false, 'message' => 'Supplier ID required.'], 400);
                 }

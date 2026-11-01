@@ -24,13 +24,15 @@ class ReportController {
     public function handleRequest(string $method, ?int $id, array $uriParts): void {
         $user = AuthMiddleware::authenticate();
         $action = $uriParts[1] ?? 'dashboard';
-        $isSuperAdmin = ($user['role'] ?? '') === 'Super Admin';
+        $role = $user['role'] ?? '';
+        $isSuperAdmin = $role === 'Super Admin';
+        $canViewReportsRole = in_array($role, ['Super Admin', 'Admin'], true);
 
         if ($method !== 'GET') {
-            if (!$isSuperAdmin) {
+            if (!$canViewReportsRole) {
                 Response::json([
                     'success' => false,
-                    'message' => '403 Forbidden: Super Admin Access Only.'
+                    'message' => '403 Forbidden: Access Denied.'
                 ], 403);
                 return;
             }
@@ -40,26 +42,31 @@ class ReportController {
 
         switch ($action) {
             case 'dashboard':
-                // Baseline overview metrics for Dashboard (COGS/profit redacted unless Super Admin)
-                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
-                $this->getDashboardOverview($user);
-                break;
-
             case 'top-selling':
-                // Top 5 Selling Products & Services widgets for Dashboard (COGS/profit redacted unless Super Admin)
-                RBACMiddleware::checkPermission($user, ['canViewDashboard', 'canViewReports']);
-                $this->getTopSelling($user);
+                // Dashboard is reserved strictly for Super Admin (hidden for Admin/Mechanic & Salesperson/Clerk)
+                if (!$isSuperAdmin) {
+                    Response::json([
+                        'success' => false,
+                        'message' => '403 Forbidden: Access Denied to Dashboard.'
+                    ], 403);
+                    return;
+                }
+                if ($action === 'dashboard') {
+                    $this->getDashboardOverview($user);
+                } else {
+                    $this->getTopSelling($user);
+                }
                 break;
 
             case 'inventory-valuation':
             case 'valuation':
             case 'sales':
             case 'revenue-trend':
-                // Standalone Reports & Revenue Trend chart strictly reserved for Super Admin only
-                if (!$isSuperAdmin) {
+                // Standalone Reports permitted for Super Admin and Admin (Mechanic); blocked for Salesperson (Clerk)
+                if (!$canViewReportsRole) {
                     Response::json([
                         'success' => false,
-                        'message' => '403 Forbidden: Super Admin Access Only.'
+                        'message' => '403 Forbidden: Access Denied to Reports.'
                     ], 403);
                     return;
                 }
@@ -71,10 +78,10 @@ class ReportController {
                 break;
 
             default:
-                if (!$isSuperAdmin) {
+                if (!$canViewReportsRole) {
                     Response::json([
                         'success' => false,
-                        'message' => '403 Forbidden: Super Admin Access Only.'
+                        'message' => '403 Forbidden: Access Denied.'
                     ], 403);
                     return;
                 }
@@ -87,7 +94,7 @@ class ReportController {
         if ($user === null) {
             return false;
         }
-        return ($user['role'] ?? '') === 'Super Admin';
+        return in_array($user['role'] ?? '', ['Super Admin', 'Admin'], true);
     }
 
     public function getDashboardOverview(?array $user = null): void {
