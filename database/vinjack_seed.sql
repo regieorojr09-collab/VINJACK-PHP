@@ -1,5 +1,5 @@
 -- VinJack Motorworks
--- Seed Data for Default Roles, Permissions, and Super Admin
+-- Seed Data for Default Roles, Permissions, Accounts, and System Settings
 
 START TRANSACTION;
 
@@ -19,51 +19,37 @@ INSERT IGNORE INTO `all_permissions` (`key`, `description`, `category`) VALUES
 
 -- 2. Insert Default Roles
 INSERT IGNORE INTO `role_permissions` (`role`) VALUES
+('Super Admin'),
 ('Admin'),
 ('Salesperson');
 
--- 3. Map Default Permissions to Roles (Admin gets everything, Salesperson gets restricted subset)
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canViewDashboard' FROM `role_permissions` WHERE `role` IN ('Admin', 'Salesperson');
+-- 3. Map Default Permissions to Roles
+-- 3a. Admin receives full operational & reporting permissions
+INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
+SELECT r.id, p.`key`
+FROM `role_permissions` r
+CROSS JOIN `all_permissions` p
+WHERE r.`role` = 'Admin';
 
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canViewInventory' FROM `role_permissions` WHERE `role` IN ('Admin', 'Salesperson');
+-- 3b. Salesperson explicitly includes canViewDashboard + baseline read-only & POS permissions
+-- (Excludes higher-level financial/COGS 'canViewReports' and administrative write permissions)
+INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`)
+SELECT r.id, p.`key`
+FROM `role_permissions` r
+JOIN `all_permissions` p ON p.`key` IN (
+    'canViewDashboard',
+    'canViewInventory',
+    'canViewSuppliers',
+    'canManageSales',
+    'canManageCustomers'
+)
+WHERE r.`role` = 'Salesperson';
 
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageInventory' FROM `role_permissions` WHERE `role` = 'Admin';
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageSales' FROM `role_permissions` WHERE `role` IN ('Admin', 'Salesperson');
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canViewSuppliers' FROM `role_permissions` WHERE `role` IN ('Admin', 'Salesperson');
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageSuppliers' FROM `role_permissions` WHERE `role` = 'Admin';
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManagePurchaseOrders' FROM `role_permissions` WHERE `role` = 'Admin';
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageDeliveries' FROM `role_permissions` WHERE `role` = 'Admin';
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageCustomers' FROM `role_permissions` WHERE `role` IN ('Admin', 'Salesperson');
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canManageReturns' FROM `role_permissions` WHERE `role` = 'Admin';
-
-INSERT IGNORE INTO `role_permission_entries` (`role_permission_id`, `permission_key`) 
-SELECT id, 'canViewReports' FROM `role_permissions` WHERE `role` = 'Admin';
-
--- 4. Create Demo Super Admin Account
--- Password is 'password123' (bcrypt hash: $2a$10$XQ.O8H55U4sZ3T4X5p5lqO4s1GqX/j/Y/453o/E2H6gK7H9wVqD6y)
--- Note: Replace hash with actual generated hash if using different password logic in the app.
+-- 4. Seed Default System & Role Accounts (Password: 'password123')
 INSERT IGNORE INTO `users` (`full_name`, `username`, `email`, `password`, `role`, `status`) VALUES
-('Super Admin', 'admin', 'admin@vinjack.com', '$2y$10$x.X/V5/3kQ8cWl0B5B1b/uR00R0bX0v0x0X/0x0/x00x0x0X0x0x0', 'Super Admin', 'active');
--- A real password hash for 'password123':
-UPDATE `users` SET `password` = '$2y$10$XA4NQ26WMahGiLUBbk/oW.5bpwBqmppMsVfmCe5kKgWLhqIuEe9JO' WHERE `username` = 'admin';
-
+('Super Admin', 'admin', 'admin@vinjack.com', '$2y$10$XA4NQ26WMahGiLUBbk/oW.5bpwBqmppMsVfmCe5kKgWLhqIuEe9JO', 'Super Admin', 'active'),
+('Lead Mechanic', 'mechanic', 'mechanic@vinjack.com', '$2y$10$XA4NQ26WMahGiLUBbk/oW.5bpwBqmppMsVfmCe5kKgWLhqIuEe9JO', 'Admin', 'active'),
+('Counter Clerk', 'clerk', 'clerk@vinjack.com', '$2y$10$XA4NQ26WMahGiLUBbk/oW.5bpwBqmppMsVfmCe5kKgWLhqIuEe9JO', 'Salesperson', 'active');
 
 -- 5. Seed Initial System Settings
 INSERT IGNORE INTO `settings` (`setting_key`, `setting_value`) VALUES
