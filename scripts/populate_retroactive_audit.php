@@ -674,3 +674,4 @@ echo sprintf("  - Purchase Orders (`purchase_orders`): %4d inserted, %4d skipped
 echo sprintf("  - Stock Ledger (`movements`)      : %4d inserted, %4d skipped\n", $stats['movements']['inserted'], $stats['movements']['skipped']);
 echo "---------------------------------------------------------------------\n";
 echo sprintf("[DONE] Total Audit Logs Inserted: %d | Duplicates Skipped: %d\n", $totalInserted, $totalSkipped);
+
