@@ -476,7 +476,7 @@ CREATE TABLE `movements` (
 DROP TABLE IF EXISTS `audit_logs`;
 CREATE TABLE `audit_logs` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `user_id` INT UNSIGNED NOT NULL,
+    `user_id` INT UNSIGNED NULL,
     `action` VARCHAR(50) NOT NULL,
     `details` TEXT NOT NULL,
     `entity_type` VARCHAR(50) NULL,
@@ -484,8 +484,8 @@ CREATE TABLE `audit_logs` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     INDEX `idx_audit_user` (`user_id`),
-    INDEX `idx_audit_created` (`created_at` DESC),
-    CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT
+    INDEX `idx_audit_created` (`created_at`),
+    CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `notifications`;
