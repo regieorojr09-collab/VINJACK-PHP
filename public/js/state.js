@@ -167,6 +167,7 @@ class StateStore {
 
             const isAdmin = this.isAdminUser();
             const canPurchaseOrders = isAdmin && this.hasPermission('canManagePurchaseOrders');
+            const canSuppliers = isAdmin;
             const canReports = isAdmin && this.hasPermission('canViewReports');
             const canAuditLog = isAdmin;
             const canUserMgmt = isAdmin;
@@ -174,6 +175,7 @@ class StateStore {
             toggleSafe('#nav-user-mgmt', canUserMgmt);
             toggleSafe('#nav-audit-log', canAuditLog);
             toggleSafe('#nav-purchase-orders', canPurchaseOrders);
+            toggleSafe('#nav-suppliers', canSuppliers);
             toggleSafe('#nav-reports', canReports);
             toggleSafe('#nav-section-reports', canReports || canAuditLog);
             toggleSafe('#nav-section-admin', canUserMgmt);

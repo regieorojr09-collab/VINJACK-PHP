@@ -48,7 +48,8 @@ class Router {
             '/audit-logs',
             '/audit_logs',
             '/purchase-orders',
-            '/purchase_orders'
+            '/purchase_orders',
+            '/suppliers'
         ]);
 
         this.appRoot = null;
